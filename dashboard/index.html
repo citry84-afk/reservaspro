@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ReservasPro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f8fafc; }
+        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .logo { font-size: 1.25rem; font-weight: bold; color: #1e40af; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; background: #1e40af; color: white; text-decoration: none; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #1e40af; }
+        .quick-actions { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .action-btn { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1.5rem; border: 2px dashed #e2e8f0; border-radius: 12px; text-decoration: none; color: #64748b; }
+        .action-btn:hover { border-color: #1e40af; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../" class="logo">📅 ReservasPro</a>
+    </header>
+    
+    <div class="container">
+        <h1>Dashboard</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div>Reservas Hoy</div>
+                <div class="stat-value">8</div>
+            </div>
+            <div class="stat-card">
+                <div>Ingresos Semana</div>
+                <div class="stat-value">€1,245</div>
+            </div>
+            <div class="stat-card">
+                <div>Clientes Nuevos</div>
+                <div class="stat-value">12</div>
+            </div>
+        </div>
+        
+        <div class="quick-actions">
+            <h3>Acciones Rápidas</h3>
+            <div class="actions">
+                <a href="calendar.html" class="action-btn">
+                    <span>📅</span>
+                    <span>Abrir Calendario</span>
+                </a>
+                <a href="#" class="action-btn">
+                    <span>��</span>
+                    <span>Agregar Cliente</span>
+                </a>
+                <a href="#" class="action-btn">
+                    <span>💼</span>
+                    <span>Configurar Servicios</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
