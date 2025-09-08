@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - ReservasPro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f8fafc; }
+        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .logo { font-size: 1.25rem; font-weight: bold; color: #1e40af; text-decoration: none; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; background: #059669; color: white; cursor: pointer; font-weight: 500; }
+        .btn:hover { background: #047857; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .card h3 { margin-bottom: 1.5rem; color: #1e293b; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151; }
+        .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #1e40af; }
+        .schedule-grid { display: grid; grid-template-columns: 120px 1fr 1fr 100px; gap: 1rem; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px; }
+        .schedule-header { font-weight: 600; color: #374151; }
+        .day-row { display: grid; grid-template-columns: 120px 1fr 1fr 100px; gap: 1rem; align-items: center; padding: 1rem; border-bottom: 1px solid #e2e8f0; }
+        .day-name { font-weight: 500; color: #374151; }
+        .toggle-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 34px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background-color: #059669; }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .time-input { max-width: 100px; }
+        .save-notification { position: fixed; top: 20px; right: 20px; background: #059669; color: white; padding: 1rem 1.5rem; border-radius: 8px; transform: translateX(100%); transition: transform 0.3s; z-index: 1000; }
+        .save-notification.show { transform: translateX(0); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="../" class="logo">📅 ReservasPro</a>
+        <a href="index.html" style="color: #64748b; text-decoration: none;">← Volver al Dashboard</a>
+    </header>
+    
+    <div class="container">
+        <h1 style="margin-bottom: 2rem;">⚙️ Configuración</h1>
+        
+        <!-- Horarios -->
+        <div class="card">
+            <h3>📅 Horarios de Trabajo</h3>
+            <div class="schedule-grid">
+                <div class="schedule-header">Día</div>
+                <div class="schedule-header">Apertura</div>
+                <div class="schedule-header">Cierre</div>
+                <div class="schedule-header">Activo</div>
+            </div>
+            <div id="scheduleContainer"></div>
+            <button class="btn" onclick="saveSchedule()">💾 Guardar Horarios</button>
+        </div>
+        
+        <!-- Servicios -->
+        <div class="card">
+            <h3>💼 Servicios</h3>
+            <div id="servicesContainer"></div>
+            <button class="btn" onclick="addService()" style="background: #1e40af;">➕ Agregar Servicio</button>
+            <button class="btn" onclick="saveServices()" style="margin-left: 1rem;">💾 Guardar Servicios</button>
+        </div>
+        
+        <!-- General -->
+        <div class="card">
+            <h3>🏢 Configuración General</h3>
+            <div class="form-group">
+                <label for="businessName">Nombre del Negocio</label>
+                <input type="text" id="businessName" value="Peluquería María">
+            </div>
+            <div class="form-group">
+                <label for="slotDuration">Duración de Slots (minutos)</label>
+                <select id="slotDuration">
+                    <option value="15">15 minutos</option>
+                    <option value="30" selected>30 minutos</option>
+                    <option value="60">60 minutos</option>
+                </select>
+            </div>
+            <button class="btn" onclick="saveGeneral()">💾 Guardar</button>
+        </div>
+    </div>
+    
+    <div id="saveNotification" class="save-notification">✅ Configuración guardada</div>
+    
+    <script>
+        const defaultSchedule = {
+            'lunes': { open: '09:00', close: '18:00', active: true },
+            'martes': { open: '09:00', close: '18:00', active: true },
+            'miércoles': { open: '09:00', close: '18:00', active: true },
+            'jueves': { open: '09:00', close: '18:00', active: true },
+            'viernes': { open: '09:00', close: '18:00', active: true },
+            'sábado': { open: '09:00', close: '15:00', active: true },
+            'domingo': { open: '10:00', close: '14:00', active: false }
+        };
+        
+        const defaultServices = [
+            { name: 'Corte', duration: 30, price: 15 },
+            { name: 'Tinte', duration: 90, price: 45 },
+            { name: 'Mechas', duration: 120, price: 65 },
+            { name: 'Lavado + Peinado', duration: 45, price: 20 },
+            { name: 'Tratamiento', duration: 60, price: 35 }
+        ];
+        
+        let schedule = JSON.parse(localStorage.getItem('businessSchedule') || JSON.stringify(defaultSchedule));
+        let services = JSON.parse(localStorage.getItem('businessServices') || JSON.stringify(defaultServices));
+        
+        function generateSchedule() {
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = '';
+            
+            Object.keys(schedule).forEach(day => {
+                const dayData = schedule[day];
+                const row = document.createElement('div');
+                row.className = 'day-row';
+                
+                row.innerHTML = `
+                    <div class="day-name">${day.charAt(0).toUpperCase() + day.slice(1)}</div>
+                    <input type="time" class="time-input" value="${dayData.open}" 
+                           onchange="updateSchedule('${day}', 'open', this.value)"
+                           ${!dayData.active ? 'disabled' : ''}>
+                    <input type="time" class="time-input" value="${dayData.close}" 
+                           onchange="updateSchedule('${day}', 'close', this.value)"
+                           ${!dayData.active ? 'disabled' : ''}>
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${dayData.active ? 'checked' : ''} 
+                               onchange="updateSchedule('${day}', 'active', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                `;
+                
+                container.appendChild(row);
+            });
+        }
+        
+        function generateServices() {
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = '';
+            
+            services.forEach((service, index) => {
+                const serviceDiv = document.createElement('div');
+                serviceDiv.style.cssText = 'display: grid; grid-template-columns: 1fr 100px 100px 50px; gap: 1rem; align-items: center; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;';
+                
+                serviceDiv.innerHTML = `
+                    <input type="text" value="${service.name}" 
+                           onchange="updateService(${index}, 'name', this.value)"
+                           placeholder="Nombre del servicio">
+                    <input type="number" value="${service.duration}" min="15" step="15"
+                           onchange="updateService(${index}, 'duration', parseInt(this.value))"
+                           placeholder="Min">
+                    <input type="number" value="${service.price}" min="0" step="0.5"
+                           onchange="updateService(${index}, 'price', parseFloat(this.value))"
+                           placeholder="€">
+                    <button onclick="removeService(${index})" style="background: #dc2626; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">🗑️</button>
+                `;
+                
+                container.appendChild(serviceDiv);
+            });
+        }
+        
+        function updateSchedule(day, field, value) {
+            schedule[day][field] = value;
+            generateSchedule();
+        }
+        
+        function updateService(index, field, value) {
+            services[index][field] = value;
+        }
+        
+        function addService() {
+            services.push({ name: 'Nuevo Servicio', duration: 30, price: 20 });
+            generateServices();
+        }
+        
+        function removeService(index) {
+            if (confirm('¿Eliminar este servicio?')) {
+                services.splice(index, 1);
+                generateServices();
+            }
+        }
+        
+        function saveSchedule() {
+            localStorage.setItem('businessSchedule', JSON.stringify(schedule));
+            showNotification();
+        }
+        
+        function saveServices() {
+            localStorage.setItem('businessServices', JSON.stringify(services));
+            showNotification();
+        }
+        
+        function saveGeneral() {
+            const general = {
+                businessName: document.getElementById('businessName').value,
+                slotDuration: parseInt(document.getElementById('slotDuration').value)
+            };
+            localStorage.setItem('businessGeneral', JSON.stringify(general));
+            showNotification();
+        }
+        
+        function showNotification() {
+            const notification = document.getElementById('saveNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            generateSchedule();
+            generateServices();
+            
+            const general = JSON.parse(localStorage.getItem('businessGeneral') || '{}');
+            if (general.businessName) {
+                document.getElementById('businessName').value = general.businessName;
+            }
+            if (general.slotDuration) {
+                document.getElementById('slotDuration').value = general.slotDuration;
+            }
+        });
+    </script>
+</body>
+</html>
