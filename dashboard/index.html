@@ -27,9 +27,11 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            transition: all 0.2s;
         }
-        .btn:hover { background: #1e3a8a; }
+        .btn:hover { background: #1e3a8a; transform: translateY(-1px); }
         .btn-secondary { background: #64748b; }
+        .btn-secondary:hover { background: #475569; }
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -79,11 +81,50 @@
             color: #64748b; 
             transition: all 0.2s;
         }
-        .action-btn:hover { border-color: #1e40af; color: #1e40af; }
+        .action-btn:hover { border-color: #1e40af; color: #1e40af; transform: translateY(-2px); }
+        
+        /* PRIVACY LEVELS */
         .hidden-data { 
             filter: blur(4px); 
-            transition: filter 0.3s; 
+            transition: all 0.3s ease; 
         }
+        .super-hidden-data {
+            filter: blur(8px) brightness(0.8);
+            opacity: 0.4;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0) !important;
+            color: transparent !important;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .completely-hidden {
+            filter: blur(12px) brightness(0.5);
+            opacity: 0.2;
+            background: #d0d0d0 !important;
+            color: transparent !important;
+            transform: scale(0.95);
+            transition: all 0.4s ease;
+        }
+        .privacy-overlay::after {
+            content: '█████████';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(200, 200, 200, 0.9);
+            color: #999;
+            font-family: monospace;
+            font-size: 1.2rem;
+            border-radius: 6px;
+            letter-spacing: -2px;
+        }
+        .privacy-overlay {
+            position: relative;
+        }
+        
         @media (max-width: 768px) {
             .page-header { flex-direction: column; gap: 1rem; align-items: stretch; }
             .stats { grid-template-columns: 1fr; }
@@ -176,30 +217,50 @@
     </div>
     
     <script>
-        let privacyMode = false;
+        let privacyLevel = 0; // 0 = visible, 1 = blur, 2 = super hidden, 3 = completely hidden
         
         function togglePrivacy() {
-            privacyMode = !privacyMode;
+            privacyLevel = (privacyLevel + 1) % 4;
             const sensitiveElements = document.querySelectorAll('.sensitive-data');
             const icon = document.getElementById('privacyIcon');
             const text = document.getElementById('privacyText');
             
-            if (privacyMode) {
-                sensitiveElements.forEach(el => el.classList.add('hidden-data'));
-                icon.textContent = '🙈';
-                text.textContent = 'Mostrar datos';
-            } else {
-                sensitiveElements.forEach(el => el.classList.remove('hidden-data'));
-                icon.textContent = '👁️';
-                text.textContent = 'Ocultar datos';
+            // Remove all privacy classes
+            sensitiveElements.forEach(el => {
+                el.classList.remove('hidden-data', 'super-hidden-data', 'completely-hidden', 'privacy-overlay');
+            });
+            
+            switch(privacyLevel) {
+                case 0: // Visible
+                    icon.textContent = '👁️';
+                    text.textContent = 'Ocultar datos';
+                    break;
+                case 1: // Light blur
+                    sensitiveElements.forEach(el => el.classList.add('hidden-data'));
+                    icon.textContent = '🙈';
+                    text.textContent = 'Más privacidad';
+                    break;
+                case 2: // Heavy blur + opacity
+                    sensitiveElements.forEach(el => el.classList.add('super-hidden-data'));
+                    icon.textContent = '🔒';
+                    text.textContent = 'Máxima privacidad';
+                    break;
+                case 3: // Complete hide with overlay
+                    sensitiveElements.forEach(el => {
+                        el.classList.add('completely-hidden', 'privacy-overlay');
+                    });
+                    icon.textContent = '🚫';
+                    text.textContent = 'Mostrar datos';
+                    break;
             }
             
-            localStorage.setItem('privacyMode', privacyMode);
+            localStorage.setItem('privacyLevel', privacyLevel);
         }
         
         document.addEventListener('DOMContentLoaded', function() {
-            const savedPrivacy = localStorage.getItem('privacyMode');
-            if (savedPrivacy === 'true') {
+            const savedPrivacy = localStorage.getItem('privacyLevel');
+            if (savedPrivacy) {
+                privacyLevel = parseInt(savedPrivacy) - 1; // Will be incremented in togglePrivacy
                 togglePrivacy();
             }
             
