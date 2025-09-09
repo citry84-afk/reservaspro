@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de QR - ReservasPro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f8fafc; }
+        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .header h1 { color: #1e40af; margin-bottom: 0.5rem; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card h3 { color: #374151; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; }
+        .btn { background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        .btn:hover { background: #059669; }
+        .btn-secondary { background: #6b7280; }
+        .btn-secondary:hover { background: #4b5563; }
+        .qr-display { text-align: center; padding: 2rem; background: #f9fafb; border-radius: 8px; margin-top: 1rem; }
+        .qr-code { margin: 1rem 0; }
+        .qr-info { background: #eff6ff; border: 2px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+        .qr-info h4 { color: #0c4a6e; margin-bottom: 0.5rem; }
+        .preview { background: #f3f4f6; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+        .preview h4 { color: #374151; margin-bottom: 0.5rem; }
+        .business-card { background: white; border: 2px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; text-align: center; }
+        .business-card h3 { color: #1e40af; margin-bottom: 0.5rem; }
+        .business-card p { color: #6b7280; margin-bottom: 0.5rem; }
+        .qr-small { width: 100px; height: 100px; margin: 0.5rem auto; }
+        .download-section { margin-top: 1rem; }
+        .download-btn { background: #1e40af; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; margin: 0.25rem; }
+        .download-btn:hover { background: #1d4ed8; }
+        .templates { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .template { border: 2px solid #e5e7eb; border-radius: 8px; padding: 1rem; cursor: pointer; transition: all 0.3s; }
+        .template:hover { border-color: #1e40af; }
+        .template.selected { border-color: #1e40af; background: #eff6ff; }
+        .template h4 { color: #374151; margin-bottom: 0.5rem; }
+        .template p { color: #6b7280; font-size: 0.875rem; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>📱 Generador de QR - ReservasPro</h1>
+        <p>Crea códigos QR personalizados para reservas rápidas</p>
+    </div>
+    
+    <div class="container">
+        <div class="grid">
+            <!-- Configuración -->
+            <div class="card">
+                <h3>⚙️ Configuración del QR</h3>
+                
+                <div class="form-group">
+                    <label for="businessName">Nombre del Negocio</label>
+                    <input type="text" id="businessName" value="Peluquería María" placeholder="Ej: Peluquería María">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookingUrl">URL de Reservas</label>
+                    <input type="url" id="bookingUrl" value="https://reservaspro.netlify.app/booking.html" placeholder="https://tu-dominio.com/booking">
+                </div>
+                
+                <div class="form-group">
+                    <label for="qrMessage">Mensaje Personalizado</label>
+                    <textarea id="qrMessage" rows="3" placeholder="¡Reserva tu cita online! Escanea el código QR y reserva en segundos.">¡Reserva tu cita online! Escanea el código QR y reserva en segundos.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="qrSize">Tamaño del QR</label>
+                    <select id="qrSize">
+                        <option value="200">Pequeño (200px)</option>
+                        <option value="300" selected>Mediano (300px)</option>
+                        <option value="400">Grande (400px)</option>
+                        <option value="500">Extra Grande (500px)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="qrColor">Color del QR</label>
+                    <input type="color" id="qrColor" value="#000000">
+                </div>
+                
+                <button class="btn" onclick="generateQR()">🎯 Generar QR</button>
+                <button class="btn btn-secondary" onclick="loadBusinessData()">📥 Cargar Datos del Negocio</button>
+            </div>
+            
+            <!-- Vista Previa -->
+            <div class="card">
+                <h3>👁️ Vista Previa</h3>
+                
+                <div id="qrDisplay" class="qr-display">
+                    <p>Configura los datos y genera tu QR</p>
+                </div>
+                
+                <div id="qrInfo" class="qr-info" style="display: none;">
+                    <h4>📋 Información del QR</h4>
+                    <p><strong>URL:</strong> <span id="infoUrl"></span></p>
+                    <p><strong>Tamaño:</strong> <span id="infoSize"></span></p>
+                    <p><strong>Color:</strong> <span id="infoColor"></span></p>
+                </div>
+                
+                <div class="download-section">
+                    <button class="download-btn" onclick="downloadQR('png')" style="display: none;" id="downloadPng">📥 Descargar PNG</button>
+                    <button class="download-btn" onclick="downloadQR('svg')" style="display: none;" id="downloadSvg">📥 Descargar SVG</button>
+                    <button class="download-btn" onclick="downloadBusinessCard()" style="display: none;" id="downloadCard">📇 Tarjeta de Negocio</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Plantillas -->
+        <div class="card" style="margin-top: 2rem;">
+            <h3>🎨 Plantillas de Tarjetas</h3>
+            <div class="templates">
+                <div class="template" onclick="selectTemplate('simple')">
+                    <h4>📄 Simple</h4>
+                    <p>Diseño limpio y minimalista</p>
+                </div>
+                <div class="template" onclick="selectTemplate('elegant')">
+                    <h4>✨ Elegante</h4>
+                    <p>Estilo profesional y sofisticado</p>
+                </div>
+                <div class="template" onclick="selectTemplate('colorful')">
+                    <h4>🌈 Colorido</h4>
+                    <p>Diseño vibrante y llamativo</p>
+                </div>
+                <div class="template" onclick="selectTemplate('modern')">
+                    <h4>🚀 Moderno</h4>
+                    <p>Estilo contemporáneo y tech</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vista Previa de Tarjeta -->
+        <div class="card" style="margin-top: 2rem;">
+            <h3>📇 Vista Previa de Tarjeta</h3>
+            <div id="businessCardPreview" class="business-card">
+                <p>Selecciona una plantilla para ver la vista previa</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQR = null;
+        let selectedTemplate = 'simple';
+        
+        function generateQR() {
+            const businessName = document.getElementById('businessName').value;
+            const bookingUrl = document.getElementById('bookingUrl').value;
+            const qrMessage = document.getElementById('qrMessage').value;
+            const qrSize = parseInt(document.getElementById('qrSize').value);
+            const qrColor = document.getElementById('qrColor').value;
+            
+            if (!businessName || !bookingUrl) {
+                alert('Por favor completa el nombre del negocio y la URL');
+                return;
+            }
+            
+            const qrDisplay = document.getElementById('qrDisplay');
+            const qrInfo = document.getElementById('qrInfo');
+            
+            // Generar QR
+            QRCode.toCanvas(document.createElement('canvas'), bookingUrl, {
+                width: qrSize,
+                height: qrSize,
+                color: {
+                    dark: qrColor,
+                    light: '#FFFFFF'
+                },
+                margin: 2
+            }, function (error, canvas) {
+                if (error) {
+                    console.error('Error generando QR:', error);
+                    alert('Error generando el código QR');
+                    return;
+                }
+                
+                currentQR = canvas;
+                qrDisplay.innerHTML = `
+                    <h4>${businessName}</h4>
+                    <div class="qr-code">${canvas.outerHTML}</div>
+                    <p>${qrMessage}</p>
+                `;
+                
+                // Mostrar información
+                document.getElementById('infoUrl').textContent = bookingUrl;
+                document.getElementById('infoSize').textContent = qrSize + 'px';
+                document.getElementById('infoColor').textContent = qrColor;
+                qrInfo.style.display = 'block';
+                
+                // Mostrar botones de descarga
+                document.getElementById('downloadPng').style.display = 'inline-block';
+                document.getElementById('downloadSvg').style.display = 'inline-block';
+                document.getElementById('downloadCard').style.display = 'inline-block';
+                
+                // Actualizar vista previa de tarjeta
+                updateBusinessCardPreview();
+            });
+        }
+        
+        function downloadQR(format) {
+            if (!currentQR) {
+                alert('Primero genera un código QR');
+                return;
+            }
+            
+            const businessName = document.getElementById('businessName').value;
+            const fileName = `${businessName.replace(/\s+/g, '_')}_QR.${format}`;
+            
+            if (format === 'png') {
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = currentQR.toDataURL();
+                link.click();
+            } else if (format === 'svg') {
+                const bookingUrl = document.getElementById('bookingUrl').value;
+                const qrSize = parseInt(document.getElementById('qrSize').value);
+                const qrColor = document.getElementById('qrColor').value;
+                
+                QRCode.toString(bookingUrl, {
+                    type: 'svg',
+                    width: qrSize,
+                    color: {
+                        dark: qrColor,
+                        light: '#FFFFFF'
+                    }
+                }, function (err, string) {
+                    if (err) {
+                        console.error('Error generando SVG:', err);
+                        return;
+                    }
+                    
+                    const blob = new Blob([string], { type: 'image/svg+xml' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                });
+            }
+        }
+        
+        function selectTemplate(template) {
+            selectedTemplate = template;
+            document.querySelectorAll('.template').forEach(t => t.classList.remove('selected'));
+            event.target.closest('.template').classList.add('selected');
+            updateBusinessCardPreview();
+        }
+        
+        function updateBusinessCardPreview() {
+            const businessName = document.getElementById('businessName').value || 'Tu Negocio';
+            const qrMessage = document.getElementById('qrMessage').value || 'Reserva tu cita online';
+            const preview = document.getElementById('businessCardPreview');
+            
+            let cardHTML = '';
+            
+            switch(selectedTemplate) {
+                case 'simple':
+                    cardHTML = `
+                        <h3>${businessName}</h3>
+                        <p>${qrMessage}</p>
+                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:100px;height:100px;background:#f3f4f6;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#6b7280;">QR</div>'}</div>
+                        <p style="font-size: 0.875rem; color: #6b7280;">Escanea para reservar</p>
+                    `;
+                    break;
+                case 'elegant':
+                    cardHTML = `
+                        <div style="border-bottom: 2px solid #1e40af; padding-bottom: 1rem; margin-bottom: 1rem;">
+                            <h3 style="color: #1e40af; font-size: 1.5rem;">${businessName}</h3>
+                        </div>
+                        <p style="font-style: italic; margin-bottom: 1rem;">${qrMessage}</p>
+                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:100px;height:100px;background:#f3f4f6;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#6b7280;">QR</div>'}</div>
+                        <p style="font-size: 0.875rem; color: #1e40af; font-weight: 500;">Reserva Online</p>
+                    `;
+                    break;
+                case 'colorful':
+                    cardHTML = `
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <h3 style="color: white; margin-bottom: 0.5rem;">${businessName}</h3>
+                            <p style="color: white; opacity: 0.9;">${qrMessage}</p>
+                        </div>
+                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:100px;height:100px;background:#f3f4f6;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#6b7280;">QR</div>'}</div>
+                        <p style="font-size: 0.875rem; color: #667eea; font-weight: 600;">¡Reserva Ahora!</p>
+                    `;
+                    break;
+                case 'modern':
+                    cardHTML = `
+                        <div style="background: #1f2937; color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <h3 style="color: #10b981; margin-bottom: 0.5rem;">${businessName}</h3>
+                            <p style="color: #d1d5db;">${qrMessage}</p>
+                        </div>
+                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:100px;height:100px;background:#f3f4f6;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#6b7280;">QR</div>'}</div>
+                        <p style="font-size: 0.875rem; color: #10b981; font-weight: 600;">SCAN TO BOOK</p>
+                    `;
+                    break;
+            }
+            
+            preview.innerHTML = cardHTML;
+        }
+        
+        function downloadBusinessCard() {
+            if (!currentQR) {
+                alert('Primero genera un código QR');
+                return;
+            }
+            
+            const businessName = document.getElementById('businessName').value || 'Tu_Negocio';
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Configurar canvas
+            canvas.width = 400;
+            canvas.height = 250;
+            
+            // Fondo blanco
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Dibujar según plantilla
+            switch(selectedTemplate) {
+                case 'simple':
+                    drawSimpleCard(ctx, canvas);
+                    break;
+                case 'elegant':
+                    drawElegantCard(ctx, canvas);
+                    break;
+                case 'colorful':
+                    drawColorfulCard(ctx, canvas);
+                    break;
+                case 'modern':
+                    drawModernCard(ctx, canvas);
+                    break;
+            }
+            
+            // Descargar
+            const link = document.createElement('a');
+            link.download = `${businessName}_Tarjeta.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        function drawSimpleCard(ctx, canvas) {
+            const businessName = document.getElementById('businessName').value || 'Tu Negocio';
+            const qrMessage = document.getElementById('qrMessage').value || 'Reserva tu cita online';
+            
+            // Título
+            ctx.fillStyle = '#1e40af';
+            ctx.font = 'bold 24px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText(businessName, canvas.width / 2, 40);
+            
+            // Mensaje
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px system-ui';
+            ctx.fillText(qrMessage, canvas.width / 2, 70);
+            
+            // QR (simulado)
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(canvas.width / 2 - 50, 100, 100, 100);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px system-ui';
+            ctx.fillText('QR', canvas.width / 2, 155);
+            
+            // Texto inferior
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '14px system-ui';
+            ctx.fillText('Escanea para reservar', canvas.width / 2, 220);
+        }
+        
+        function drawElegantCard(ctx, canvas) {
+            const businessName = document.getElementById('businessName').value || 'Tu Negocio';
+            const qrMessage = document.getElementById('qrMessage').value || 'Reserva tu cita online';
+            
+            // Línea superior
+            ctx.fillStyle = '#1e40af';
+            ctx.fillRect(0, 0, canvas.width, 4);
+            
+            // Título
+            ctx.fillStyle = '#1e40af';
+            ctx.font = 'bold 28px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText(businessName, canvas.width / 2, 50);
+            
+            // Mensaje
+            ctx.fillStyle = '#374151';
+            ctx.font = 'italic 16px system-ui';
+            ctx.fillText(qrMessage, canvas.width / 2, 80);
+            
+            // QR
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(canvas.width / 2 - 50, 110, 100, 100);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px system-ui';
+            ctx.fillText('QR', canvas.width / 2, 165);
+            
+            // Texto inferior
+            ctx.fillStyle = '#1e40af';
+            ctx.font = 'bold 16px system-ui';
+            ctx.fillText('Reserva Online', canvas.width / 2, 230);
+        }
+        
+        function drawColorfulCard(ctx, canvas) {
+            const businessName = document.getElementById('businessName').value || 'Tu Negocio';
+            const qrMessage = document.getElementById('qrMessage').value || 'Reserva tu cita online';
+            
+            // Fondo degradado
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, 80);
+            
+            // Título
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText(businessName, canvas.width / 2, 35);
+            
+            // Mensaje
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '16px system-ui';
+            ctx.fillText(qrMessage, canvas.width / 2, 60);
+            
+            // QR
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(canvas.width / 2 - 50, 120, 100, 100);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px system-ui';
+            ctx.fillText('QR', canvas.width / 2, 175);
+            
+            // Texto inferior
+            ctx.fillStyle = '#667eea';
+            ctx.font = 'bold 16px system-ui';
+            ctx.fillText('¡Reserva Ahora!', canvas.width / 2, 240);
+        }
+        
+        function drawModernCard(ctx, canvas) {
+            const businessName = document.getElementById('businessName').value || 'Tu Negocio';
+            const qrMessage = document.getElementById('qrMessage').value || 'Reserva tu cita online';
+            
+            // Fondo oscuro
+            ctx.fillStyle = '#1f2937';
+            ctx.fillRect(0, 0, canvas.width, 80);
+            
+            // Título
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 24px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText(businessName, canvas.width / 2, 35);
+            
+            // Mensaje
+            ctx.fillStyle = '#d1d5db';
+            ctx.font = '16px system-ui';
+            ctx.fillText(qrMessage, canvas.width / 2, 60);
+            
+            // QR
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(canvas.width / 2 - 50, 120, 100, 100);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px system-ui';
+            ctx.fillText('QR', canvas.width / 2, 175);
+            
+            // Texto inferior
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 16px system-ui';
+            ctx.fillText('SCAN TO BOOK', canvas.width / 2, 240);
+        }
+        
+        function loadBusinessData() {
+            // Cargar datos del negocio desde localStorage
+            const businessName = localStorage.getItem('businessName') || 'Peluquería María';
+            const businessUrl = window.location.origin + '/booking.html';
+            
+            document.getElementById('businessName').value = businessName;
+            document.getElementById('bookingUrl').value = businessUrl;
+            
+            // Generar QR automáticamente
+            generateQR();
+        }
+        
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBusinessData();
+        });
+    </script>
+</body>
+</html>

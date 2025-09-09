@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget QR - ReservasPro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f8fafc; }
+        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .header h1 { color: #1e40af; margin-bottom: 0.5rem; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card h3 { color: #374151; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; }
+        .btn { background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        .btn:hover { background: #059669; }
+        .btn-secondary { background: #6b7280; }
+        .btn-secondary:hover { background: #4b5563; }
+        .widget-preview { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; padding: 2rem; margin-top: 1rem; text-align: center; }
+        .widget-code { background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 8px; margin-top: 1rem; font-family: monospace; font-size: 0.875rem; overflow-x: auto; }
+        .copy-btn { background: #1e40af; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin-top: 0.5rem; }
+        .copy-btn:hover { background: #1d4ed8; }
+        .widget-styles { background: #fef3c7; border: 1px solid #f59e0b; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+        .widget-styles h4 { color: #92400e; margin-bottom: 0.5rem; }
+        .size-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .size-option { border: 2px solid #e5e7eb; border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .size-option:hover { border-color: #1e40af; }
+        .size-option.selected { border-color: #1e40af; background: #eff6ff; }
+        .size-option h4 { color: #374151; margin-bottom: 0.5rem; }
+        .size-option p { color: #6b7280; font-size: 0.875rem; }
+        .live-preview { background: white; border: 2px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+        .live-preview h4 { color: #374151; margin-bottom: 1rem; }
+        .qr-widget { display: inline-block; text-align: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; }
+        .qr-widget h3 { color: #1e40af; margin-bottom: 0.5rem; }
+        .qr-widget p { color: #6b7280; margin-bottom: 1rem; font-size: 0.875rem; }
+        .qr-widget .qr-code { margin: 0.5rem 0; }
+        .qr-widget .btn { background: #1e40af; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-size: 0.875rem; }
+        .qr-widget .btn:hover { background: #1d4ed8; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>🔗 Widget QR - ReservasPro</h1>
+        <p>Crea widgets embebibles para tu sitio web</p>
+    </div>
+    
+    <div class="container">
+        <div class="grid">
+            <!-- Configuración del Widget -->
+            <div class="card">
+                <h3>⚙️ Configuración del Widget</h3>
+                
+                <div class="form-group">
+                    <label for="businessName">Nombre del Negocio</label>
+                    <input type="text" id="businessName" value="Peluquería María" placeholder="Ej: Peluquería María">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookingUrl">URL de Reservas</label>
+                    <input type="url" id="bookingUrl" value="https://reservaspro.netlify.app/booking.html" placeholder="https://tu-dominio.com/booking">
+                </div>
+                
+                <div class="form-group">
+                    <label for="widgetMessage">Mensaje del Widget</label>
+                    <textarea id="widgetMessage" rows="2" placeholder="¡Reserva tu cita online!">¡Reserva tu cita online!</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="widgetSize">Tamaño del Widget</label>
+                    <div class="size-options">
+                        <div class="size-option selected" onclick="selectSize('small')" data-size="small">
+                            <h4>📱 Pequeño</h4>
+                            <p>200x300px</p>
+                        </div>
+                        <div class="size-option" onclick="selectSize('medium')" data-size="medium">
+                            <h4>💻 Mediano</h4>
+                            <p>300x400px</p>
+                        </div>
+                        <div class="size-option" onclick="selectSize('large')" data-size="large">
+                            <h4>🖥️ Grande</h4>
+                            <p>400x500px</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="widgetStyle">Estilo del Widget</label>
+                    <select id="widgetStyle">
+                        <option value="minimal">Minimalista</option>
+                        <option value="elegant">Elegante</option>
+                        <option value="colorful">Colorido</option>
+                        <option value="modern">Moderno</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="generateWidget()">🎯 Generar Widget</button>
+                <button class="btn btn-secondary" onclick="loadBusinessData()">📥 Cargar Datos</button>
+            </div>
+            
+            <!-- Vista Previa y Código -->
+            <div class="card">
+                <h3>👁️ Vista Previa del Widget</h3>
+                
+                <div id="widgetPreview" class="widget-preview">
+                    <p>Configura el widget y genera el código</p>
+                </div>
+                
+                <div id="widgetCode" class="widget-code" style="display: none;">
+                    <h4>📋 Código HTML para Embeber</h4>
+                    <pre id="codeContent"></pre>
+                    <button class="copy-btn" onclick="copyCode()">📋 Copiar Código</button>
+                </div>
+                
+                <div class="widget-styles">
+                    <h4>🎨 Estilos CSS Adicionales</h4>
+                    <p>Incluye estos estilos en tu sitio web para personalizar el widget:</p>
+                    <pre id="cssStyles" style="font-size: 0.75rem; margin-top: 0.5rem;"></pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vista Previa en Vivo -->
+        <div class="card" style="margin-top: 2rem;">
+            <h3>🔄 Vista Previa en Vivo</h3>
+            <div class="live-preview">
+                <h4>Así se verá en tu sitio web:</h4>
+                <div id="liveWidgetPreview">
+                    <p>Genera el widget para ver la vista previa</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentWidget = null;
+        let selectedSize = 'small';
+        
+        function selectSize(size) {
+            selectedSize = size;
+            document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.closest('.size-option').classList.add('selected');
+        }
+        
+        function generateWidget() {
+            const businessName = document.getElementById('businessName').value;
+            const bookingUrl = document.getElementById('bookingUrl').value;
+            const widgetMessage = document.getElementById('widgetMessage').value;
+            const widgetStyle = document.getElementById('widgetStyle').value;
+            
+            if (!businessName || !bookingUrl) {
+                alert('Por favor completa el nombre del negocio y la URL');
+                return;
+            }
+            
+            // Generar QR
+            QRCode.toString(bookingUrl, {
+                type: 'svg',
+                width: getQRSize(),
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function (err, qrSvg) {
+                if (err) {
+                    console.error('Error generando QR:', err);
+                    alert('Error generando el código QR');
+                    return;
+                }
+                
+                // Generar widget HTML
+                const widgetHTML = generateWidgetHTML(businessName, widgetMessage, qrSvg, widgetStyle);
+                const widgetCSS = generateWidgetCSS(widgetStyle);
+                
+                // Mostrar vista previa
+                document.getElementById('widgetPreview').innerHTML = widgetHTML;
+                document.getElementById('liveWidgetPreview').innerHTML = widgetHTML;
+                
+                // Mostrar código
+                const codeContent = `<!-- Widget QR ReservasPro -->
+<div id="reservaspro-widget">
+${widgetHTML}
+</div>
+
+<!-- Estilos del Widget -->
+<style>
+${widgetCSS}
+</style>
+
+<!-- Script del Widget -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const widget = document.getElementById('reservaspro-widget');
+    if (widget) {
+        // Añadir funcionalidad de clic
+        const qrBtn = widget.querySelector('.qr-btn');
+        if (qrBtn) {
+            qrBtn.addEventListener('click', function() {
+                window.open('${bookingUrl}', '_blank');
+            });
+        }
+    }
+});
+</script>`;
+                
+                document.getElementById('codeContent').textContent = codeContent;
+                document.getElementById('cssStyles').textContent = widgetCSS;
+                document.getElementById('widgetCode').style.display = 'block';
+                
+                currentWidget = { html: widgetHTML, css: widgetCSS, code: codeContent };
+            });
+        }
+        
+        function generateWidgetHTML(businessName, message, qrSvg, style) {
+            const sizeClass = `widget-${selectedSize}`;
+            const styleClass = `style-${style}`;
+            
+            return `
+<div class="reservaspro-widget ${sizeClass} ${styleClass}">
+    <h3>${businessName}</h3>
+    <p>${message}</p>
+    <div class="qr-code">${qrSvg}</div>
+    <button class="qr-btn">Reservar Ahora</button>
+</div>`;
+        }
+        
+        function generateWidgetCSS(style) {
+            const baseCSS = `
+.reservaspro-widget {
+    display: inline-block;
+    text-align: center;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    font-family: system-ui, -apple-system, sans-serif;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reservaspro-widget h3 {
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.reservaspro-widget p {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.reservaspro-widget .qr-code {
+    margin: 0.5rem 0;
+}
+
+.reservaspro-widget .qr-code svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.reservaspro-widget .qr-btn {
+    background: #1e40af;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background 0.3s;
+}
+
+.reservaspro-widget .qr-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Tamaños */
+.widget-small { max-width: 200px; }
+.widget-medium { max-width: 300px; }
+.widget-large { max-width: 400px; }
+
+/* Estilos */
+.style-minimal {
+    border: 1px solid #d1d5db;
+    box-shadow: none;
+}
+
+.style-elegant {
+    border: 2px solid #1e40af;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.style-colorful {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.style-colorful h3 {
+    color: white;
+}
+
+.style-colorful p {
+    color: rgba(255,255,255,0.9);
+}
+
+.style-modern {
+    background: #1f2937;
+    color: white;
+    border: 2px solid #374151;
+}
+
+.style-modern h3 {
+    color: #10b981;
+}
+
+.style-modern p {
+    color: #d1d5db;
+}
+
+.style-modern .qr-btn {
+    background: #10b981;
+}
+
+.style-modern .qr-btn:hover {
+    background: #059669;
+}`;
+            
+            return baseCSS;
+        }
+        
+        function getQRSize() {
+            switch(selectedSize) {
+                case 'small': return 120;
+                case 'medium': return 180;
+                case 'large': return 240;
+                default: return 120;
+            }
+        }
+        
+        function copyCode() {
+            const codeContent = document.getElementById('codeContent').textContent;
+            navigator.clipboard.writeText(codeContent).then(() => {
+                alert('¡Código copiado al portapapeles!');
+            }).catch(err => {
+                console.error('Error copiando código:', err);
+                // Fallback para navegadores que no soportan clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = codeContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('¡Código copiado al portapapeles!');
+            });
+        }
+        
+        function loadBusinessData() {
+            const businessName = localStorage.getItem('businessName') || 'Peluquería María';
+            const businessUrl = window.location.origin + '/booking.html';
+            
+            document.getElementById('businessName').value = businessName;
+            document.getElementById('bookingUrl').value = businessUrl;
+            
+            generateWidget();
+        }
+        
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBusinessData();
+        });
+    </script>
+</body>
+</html>
