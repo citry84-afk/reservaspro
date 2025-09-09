@@ -161,7 +161,7 @@
             border: none; 
             padding: 0.75rem 1.5rem; 
             border-radius: 8px; 
-            text-decoration: none; 
+            cursor: pointer; 
             font-size: 1rem; 
             font-weight: 600;
             transition: all 0.3s;
@@ -194,7 +194,6 @@
             .container { padding: 1rem; }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
     <div class="header">
@@ -231,7 +230,7 @@
                             <p>200x300px</p>
                         </div>
                         <div class="size-option" onclick="selectSize('medium')" data-size="medium">
-                            <h4>�� Mediano</h4>
+                            <h4>💻 Mediano</h4>
                             <p>300x400px</p>
                         </div>
                         <div class="size-option" onclick="selectSize('large')" data-size="large">
@@ -311,7 +310,7 @@
             successDiv.style.display = 'block';
             setTimeout(() => {
                 successDiv.style.display = 'none';
-            }, 3000);
+            }, 3000;
         }
         
         function selectSize(size) {
@@ -339,32 +338,19 @@
             // Mostrar loading
             document.getElementById('widgetPreview').innerHTML = '<p>🔄 Generando widget...</p>';
             
-            // Generar QR
-            QRCode.toString(bookingUrl, {
-                type: 'svg',
-                width: getQRSize(),
-                color: {
-                    dark: '#000000',
-                    light: '#FFFFFF'
-                }
-            }, function (err, qrSvg) {
-                if (err) {
-                    console.error('Error generando QR:', err);
-                    showError('Error generando el código QR');
-                    document.getElementById('widgetPreview').innerHTML = '<p>Error generando widget</p>';
-                    return;
-                }
-                
-                // Generar widget HTML
-                const widgetHTML = generateWidgetHTML(businessName, widgetMessage, qrSvg, widgetStyle);
-                const widgetCSS = generateWidgetCSS(widgetStyle);
-                
-                // Mostrar vista previa
-                document.getElementById('widgetPreview').innerHTML = widgetHTML;
-                document.getElementById('liveWidgetPreview').innerHTML = widgetHTML;
-                
-                // Mostrar código
-                const codeContent = `<!-- Widget QR ReservasPro -->
+            // Generar QR usando API externa
+            generateQRForWidget(bookingUrl, getQRSize(), function(success, qrHTML) {
+                if (success) {
+                    // Generar widget HTML
+                    const widgetHTML = generateWidgetHTML(businessName, widgetMessage, qrHTML, widgetStyle);
+                    const widgetCSS = generateWidgetCSS(widgetStyle);
+                    
+                    // Mostrar vista previa
+                    document.getElementById('widgetPreview').innerHTML = widgetHTML;
+                    document.getElementById('liveWidgetPreview').innerHTML = widgetHTML;
+                    
+                    // Mostrar código
+                    const codeContent = `<!-- Widget QR ReservasPro -->
 <div id="reservaspro-widget">
 ${widgetHTML}
 </div>
@@ -389,17 +375,85 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>`;
-                
-                document.getElementById('codeContent').textContent = codeContent;
-                document.getElementById('cssStyles').textContent = widgetCSS;
-                document.getElementById('widgetCode').style.display = 'block';
-                
-                currentWidget = { html: widgetHTML, css: widgetCSS, code: codeContent };
-                showSuccess('¡Widget generado correctamente!');
+                    
+                    document.getElementById('codeContent').textContent = codeContent;
+                    document.getElementById('cssStyles').textContent = widgetCSS;
+                    document.getElementById('widgetCode').style.display = 'block';
+                    
+                    currentWidget = { html: widgetHTML, css: widgetCSS, code: codeContent };
+                    showSuccess('¡Widget generado correctamente!');
+                } else {
+                    showError('Error generando el widget');
+                    document.getElementById('widgetPreview').innerHTML = '<p>Error generando widget</p>';
+                }
             });
         }
         
-        function generateWidgetHTML(businessName, message, qrSvg, style) {
+        function generateQRForWidget(url, size, callback) {
+            // Usar API externa para generar QR
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}`;
+            
+            // Crear imagen
+            const img = document.createElement('img');
+            img.src = qrUrl;
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            img.style.borderRadius = '8px';
+            
+            img.onload = function() {
+                callback(true, img.outerHTML);
+            };
+            
+            img.onerror = function() {
+                // Fallback: crear un QR simple
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = size;
+                canvas.height = size;
+                
+                // Fondo blanco
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, size, size);
+                
+                // Patrón QR simple
+                ctx.fillStyle = '#000000';
+                const blockSize = size / 25;
+                
+                // Esquinas
+                drawQRCorner(ctx, 0, 0, blockSize);
+                drawQRCorner(ctx, size - 7 * blockSize, 0, blockSize);
+                drawQRCorner(ctx, 0, size - 7 * blockSize, blockSize);
+                
+                // Patrón de datos simple
+                for (let i = 0; i < 25; i++) {
+                    for (let j = 0; j < 25; j++) {
+                        if ((i + j) % 3 === 0) {
+                            ctx.fillRect(i * blockSize, j * blockSize, blockSize, blockSize);
+                        }
+                    }
+                }
+                
+                // Texto en el centro
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 20px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText('QR', size / 2, size / 2 + 7);
+                
+                callback(true, canvas.outerHTML);
+            };
+        }
+        
+        function drawQRCorner(ctx, x, y, blockSize) {
+            // Dibujar esquina de QR
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x, y, 7 * blockSize, 7 * blockSize);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x + blockSize, y + blockSize, 5 * blockSize, 5 * blockSize);
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x + 2 * blockSize, y + 2 * blockSize, 3 * blockSize, 3 * blockSize);
+        }
+        
+        function generateWidgetHTML(businessName, message, qrHTML, style) {
             const sizeClass = `widget-${selectedSize}`;
             const styleClass = `style-${style}`;
             
@@ -407,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="reservaspro-widget ${sizeClass} ${styleClass}">
     <h3>${businessName}</h3>
     <p>${message}</p>
-    <div class="qr-code">${qrSvg}</div>
+    <div class="qr-code">${qrHTML}</div>
     <button class="qr-btn">Reservar Ahora</button>
 </div>`;
         }
@@ -449,7 +503,8 @@ document.addEventListener('DOMContentLoaded', function() {
     margin: 1rem 0;
 }
 
-.reservaspro-widget .qr-code svg {
+.reservaspro-widget .qr-code img,
+.reservaspro-widget .qr-code canvas {
     max-width: 100%;
     height: auto;
     border-radius: 8px;

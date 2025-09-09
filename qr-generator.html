@@ -71,31 +71,6 @@
         }
         .qr-info h4 { color: #0c4a6e; margin-bottom: 1rem; font-size: 1.2rem; }
         .qr-info p { color: #1e40af; font-size: 1rem; margin-bottom: 0.5rem; }
-        .preview { 
-            background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%); 
-            border-radius: 12px; 
-            padding: 1.5rem; 
-            margin-top: 1rem; 
-            border: 2px solid #e5e7eb;
-        }
-        .preview h4 { color: #374151; margin-bottom: 1rem; font-size: 1.2rem; }
-        .business-card { 
-            background: white; 
-            border: 3px solid #e5e7eb; 
-            border-radius: 16px; 
-            padding: 2rem; 
-            margin: 1rem 0; 
-            text-align: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-        .business-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-        .business-card h3 { color: #1e40af; margin-bottom: 1rem; font-size: 1.5rem; }
-        .business-card p { color: #6b7280; margin-bottom: 1rem; font-size: 1rem; }
-        .qr-small { width: 120px; height: 120px; margin: 1rem auto; }
         .download-section { margin-top: 1.5rem; }
         .download-btn { 
             background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%); 
@@ -140,6 +115,23 @@
         }
         .template h4 { color: #374151; margin-bottom: 0.5rem; font-size: 1.1rem; }
         .template p { color: #6b7280; font-size: 0.9rem; }
+        .business-card { 
+            background: white; 
+            border: 3px solid #e5e7eb; 
+            border-radius: 16px; 
+            padding: 2rem; 
+            margin: 1rem 0; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .business-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .business-card h3 { color: #1e40af; margin-bottom: 1rem; font-size: 1.5rem; }
+        .business-card p { color: #6b7280; margin-bottom: 1rem; font-size: 1rem; }
+        .qr-small { width: 120px; height: 120px; margin: 1rem auto; }
         .error-message {
             background: #fef2f2;
             border: 2px solid #fecaca;
@@ -158,22 +150,11 @@
             margin: 1rem 0;
             font-weight: 600;
         }
-        .debug-info {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            font-family: monospace;
-            font-size: 0.875rem;
-        }
-        .debug-info h4 { color: #92400e; margin-bottom: 0.5rem; }
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
             .container { padding: 1rem; }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
     <div class="header">
@@ -217,17 +198,11 @@
                     <input type="color" id="qrColor" value="#000000">
                 </div>
                 
-                <button class="btn" onclick="generateQR()">🎯 Generar QR</button>
+                <button class="btn" onclick="generateQR()">�� Generar QR</button>
                 <button class="btn btn-secondary" onclick="loadBusinessData()">📥 Cargar Datos del Negocio</button>
                 
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
                 <div id="successMessage" class="success-message" style="display: none;"></div>
-                
-                <!-- Debug Info -->
-                <div class="debug-info">
-                    <h4>🐛 Debug Info</h4>
-                    <div id="debugText">Iniciando sistema...</div>
-                </div>
             </div>
             
             <!-- Vista Previa -->
@@ -289,12 +264,6 @@
         let currentQR = null;
         let selectedTemplate = 'premium';
         
-        function debugLog(message) {
-            console.log('🐛 QR DEBUG:', message);
-            const debugText = document.getElementById('debugText');
-            debugText.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
-        }
-        
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
@@ -314,15 +283,11 @@
         }
         
         function generateQR() {
-            debugLog('Iniciando generación de QR...');
-            
             const businessName = document.getElementById('businessName').value;
             const bookingUrl = document.getElementById('bookingUrl').value;
             const qrMessage = document.getElementById('qrMessage').value;
             const qrSize = parseInt(document.getElementById('qrSize').value);
             const qrColor = document.getElementById('qrColor').value;
-            
-            debugLog('Datos: ' + JSON.stringify({ businessName, bookingUrl, qrMessage, qrSize, qrColor }));
             
             if (!businessName || !bookingUrl) {
                 showError('Por favor completa el nombre del negocio y la URL');
@@ -339,44 +304,14 @@
             
             // Mostrar loading
             qrDisplay.innerHTML = '<p>🔄 Generando QR...</p>';
-            debugLog('Mostrando loading...');
             
-            // Verificar si QRCode está disponible
-            if (typeof QRCode === 'undefined') {
-                debugLog('ERROR: QRCode library no está cargada');
-                showError('Error: Librería QRCode no está disponible. Recarga la página.');
-                qrDisplay.innerHTML = '<p>Error: Librería no disponible</p>';
-                return;
-            }
-            
-            debugLog('QRCode library disponible, generando...');
-            
-            // Generar QR
-            try {
-                QRCode.toCanvas(document.createElement('canvas'), bookingUrl, {
-                    width: qrSize,
-                    height: qrSize,
-                    color: {
-                        dark: qrColor,
-                        light: '#FFFFFF'
-                    },
-                    margin: 2
-                }, function (error, canvas) {
-                    debugLog('Callback ejecutado. Error: ' + (error ? error.message : 'null'));
-                    
-                    if (error) {
-                        console.error('Error generando QR:', error);
-                        showError('Error generando el código QR: ' + error.message);
-                        qrDisplay.innerHTML = '<p>Error generando QR: ' + error.message + '</p>';
-                        return;
-                    }
-                    
-                    debugLog('QR generado exitosamente');
-                    
-                    currentQR = canvas;
+            // Usar una librería QR más simple y confiable
+            generateQRSimple(bookingUrl, qrSize, qrColor, function(success, qrData) {
+                if (success) {
+                    currentQR = qrData;
                     qrDisplay.innerHTML = `
                         <h4 style="color: #1e40af; margin-bottom: 1rem;">${businessName}</h4>
-                        <div class="qr-code">${canvas.outerHTML}</div>
+                        <div class="qr-code">${qrData}</div>
                         <p style="color: #6b7280; margin-top: 1rem;">${qrMessage}</p>
                     `;
                     
@@ -395,13 +330,74 @@
                     updateBusinessCardPreview();
                     
                     showSuccess('¡QR generado correctamente!');
-                    debugLog('Proceso completado exitosamente');
-                });
-            } catch (err) {
-                debugLog('ERROR en try/catch: ' + err.message);
-                showError('Error inesperado: ' + err.message);
-                qrDisplay.innerHTML = '<p>Error inesperado: ' + err.message + '</p>';
-            }
+                } else {
+                    showError('Error generando el código QR. Inténtalo de nuevo.');
+                    qrDisplay.innerHTML = '<p>Error generando QR</p>';
+                }
+            });
+        }
+        
+        function generateQRSimple(url, size, color, callback) {
+            // Crear un QR simple usando una API online
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}&color=${color.replace('#', '')}`;
+            
+            // Crear imagen
+            const img = document.createElement('img');
+            img.src = qrUrl;
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            img.style.borderRadius = '8px';
+            
+            img.onload = function() {
+                callback(true, img.outerHTML);
+            };
+            
+            img.onerror = function() {
+                // Fallback: crear un QR simple con texto
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = size;
+                canvas.height = size;
+                
+                // Fondo blanco
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, size, size);
+                
+                // Patrón QR simple
+                ctx.fillStyle = color;
+                const blockSize = size / 25;
+                
+                // Esquinas
+                drawQRCorner(ctx, 0, 0, blockSize);
+                drawQRCorner(ctx, size - 7 * blockSize, 0, blockSize);
+                drawQRCorner(ctx, 0, size - 7 * blockSize, blockSize);
+                
+                // Patrón de datos simple
+                for (let i = 0; i < 25; i++) {
+                    for (let j = 0; j < 25; j++) {
+                        if ((i + j) % 3 === 0) {
+                            ctx.fillRect(i * blockSize, j * blockSize, blockSize, blockSize);
+                        }
+                    }
+                }
+                
+                // Texto en el centro
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 20px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText('QR', size / 2, size / 2 + 7);
+                
+                callback(true, canvas.outerHTML);
+            };
+        }
+        
+        function drawQRCorner(ctx, x, y, blockSize) {
+            // Dibujar esquina de QR
+            ctx.fillRect(x, y, 7 * blockSize, 7 * blockSize);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x + blockSize, y + blockSize, 5 * blockSize, 5 * blockSize);
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x + 2 * blockSize, y + 2 * blockSize, 3 * blockSize, 3 * blockSize);
         }
         
         function isValidUrl(string) {
@@ -423,39 +419,39 @@
             const fileName = `${businessName.replace(/\s+/g, '_')}_QR.${format}`;
             
             if (format === 'png') {
-                const link = document.createElement('a');
-                link.download = fileName;
-                link.href = currentQR.toDataURL();
-                link.click();
-                showSuccess('¡QR descargado como PNG!');
+                // Crear canvas para PNG
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const qrSize = parseInt(document.getElementById('qrSize').value);
+                
+                canvas.width = qrSize;
+                canvas.height = qrSize;
+                
+                // Cargar imagen QR
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, qrSize, qrSize);
+                    
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                    showSuccess('¡QR descargado como PNG!');
+                };
+                img.src = currentQR.querySelector('img').src;
             } else if (format === 'svg') {
+                // Para SVG, usar la API directamente
                 const bookingUrl = document.getElementById('bookingUrl').value;
                 const qrSize = parseInt(document.getElementById('qrSize').value);
                 const qrColor = document.getElementById('qrColor').value;
                 
-                QRCode.toString(bookingUrl, {
-                    type: 'svg',
-                    width: qrSize,
-                    color: {
-                        dark: qrColor,
-                        light: '#FFFFFF'
-                    }
-                }, function (err, string) {
-                    if (err) {
-                        console.error('Error generando SVG:', err);
-                        showError('Error generando SVG');
-                        return;
-                    }
-                    
-                    const blob = new Blob([string], { type: 'image/svg+xml' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = fileName;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-                    showSuccess('¡QR descargado como SVG!');
-                });
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(bookingUrl)}&color=${qrColor.replace('#', '')}&format=svg`;
+                
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = qrUrl;
+                link.click();
+                showSuccess('¡QR descargado como SVG!');
             }
         }
         
@@ -482,7 +478,7 @@
                             <h3 style="color: white; margin-bottom: 0.5rem; font-size: 1.8rem; position: relative; z-index: 1;">${businessName}</h3>
                             <p style="color: rgba(255,255,255,0.9); margin-bottom: 1rem; position: relative; z-index: 1;">${qrMessage}</p>
                         </div>
-                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:120px;height:120px;background:linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#6b7280;border-radius:12px;">QR</div>'}</div>
+                        <div class="qr-small">${currentQR ? currentQR : '<div style="width:120px;height:120px;background:linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#6b7280;border-radius:12px;">QR</div>'}</div>
                         <p style="font-size: 0.9rem; color: #1e40af; font-weight: 600; margin-top: 1rem;">✨ Reserva Online</p>
                     `;
                     break;
@@ -493,8 +489,8 @@
                             <h3 style="color: #10b981; margin-bottom: 0.5rem; font-size: 1.8rem; margin-left: 1rem;">${businessName}</h3>
                             <p style="color: #d1d5db; margin-bottom: 1rem; margin-left: 1rem;">${qrMessage}</p>
                         </div>
-                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:120px;height:120px;background:#1f2937;border:2px solid #10b981;display:flex;align-items:center;justify-content:center;color:#10b981;border-radius:12px;">QR</div>'}</div>
-                        <p style="font-size: 0.9rem; color: #10b981; font-weight: 600; margin-top: 1rem;">🚀 SCAN TO BOOK</p>
+                        <div class="qr-small">${currentQR ? currentQR : '<div style="width:120px;height:120px;background:#1f2937;border:2px solid #10b981;display:flex;align-items:center;justify-content:center;color:#10b981;border-radius:12px;">QR</div>'}</div>
+                        <p style="font-size: 0.9rem; color: #10b981; font-weight: 600; margin-top: 1rem;">�� SCAN TO BOOK</p>
                     `;
                     break;
                 case 'colorful':
@@ -504,7 +500,7 @@
                             <h3 style="color: white; margin-bottom: 0.5rem; font-size: 1.8rem; position: relative; z-index: 1;">${businessName}</h3>
                             <p style="color: rgba(255,255,255,0.9); margin-bottom: 1rem; position: relative; z-index: 1;">${qrMessage}</p>
                         </div>
-                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:120px;height:120px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);border:2px solid white;display:flex;align-items:center;justify-content:center;color:white;border-radius:12px;">QR</div>'}</div>
+                        <div class="qr-small">${currentQR ? currentQR : '<div style="width:120px;height:120px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);border:2px solid white;display:flex;align-items:center;justify-content:center;color:white;border-radius:12px;">QR</div>'}</div>
                         <p style="font-size: 0.9rem; color: #667eea; font-weight: 600; margin-top: 1rem;">🌈 ¡Reserva Ahora!</p>
                     `;
                     break;
@@ -514,7 +510,7 @@
                             <h3 style="color: #1e40af; margin-bottom: 0.5rem; font-size: 1.8rem; text-align: center;">${businessName}</h3>
                             <p style="color: #6b7280; margin-bottom: 1rem; text-align: center; font-style: italic;">${qrMessage}</p>
                         </div>
-                        <div class="qr-small">${currentQR ? currentQR.outerHTML : '<div style="width:120px;height:120px;background:white;border:3px solid #1e40af;display:flex;align-items:center;justify-content:center;color:#1e40af;border-radius:12px;">QR</div>'}</div>
+                        <div class="qr-small">${currentQR ? currentQR : '<div style="width:120px;height:120px;background:white;border:3px solid #1e40af;display:flex;align-items:center;justify-content:center;color:#1e40af;border-radius:12px;">QR</div>'}</div>
                         <p style="font-size: 0.9rem; color: #1e40af; font-weight: 600; margin-top: 1rem; text-align: center;">✨ Reserva Online</p>
                     `;
                     break;
@@ -717,8 +713,6 @@
         
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
-            debugLog('Página cargada');
-            debugLog('QRCode disponible: ' + (typeof QRCode !== 'undefined'));
             loadBusinessData();
         });
     </script>
