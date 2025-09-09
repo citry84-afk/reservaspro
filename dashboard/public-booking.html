@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas Públicas - ReservasPro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f8fafc; }
+        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header h1 { color: #1e40af; }
+        .header a { color: #6b7280; text-decoration: none; margin-left: 1rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .hero { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 3rem; border-radius: 12px; text-align: center; margin-bottom: 2rem; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .url-card { background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+        .url-display { background: white; border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; font-family: monospace; word-break: break-all; margin: 1rem 0; }
+        .btn { background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; margin-right: 1rem; margin-bottom: 0.5rem; }
+        .btn-secondary { background: #6366f1; }
+        .btn-warning { background: #d97706; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; border-radius: 8px; padding: 1.5rem; text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #1e40af; }
+        .stat-label { color: #6b7280; margin-top: 0.5rem; }
+        .pending-reservations { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; }
+        .reservation-item { background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .qr-container { text-align: center; padding: 2rem; background: #f8fafc; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🌐 Reservas Públicas</h1>
+            <a href="index.html">← Dashboard</a>
+            <a href="calendar.html">📅 Calendario</a>
+            <a href="notifications.html">🔔 Notificaciones</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="hero">
+            <h1>🌐 Sistema de Reservas Online</h1>
+            <p>Permite que tus clientes reserven citas las 24 horas</p>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalReservations">0</div>
+                <div class="stat-label">Reservas Online</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingReservations">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="confirmedReservations">0</div>
+                <div class="stat-label">Confirmadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayReservations">0</div>
+                <div class="stat-label">Hoy</div>
+            </div>
+        </div>
+        
+        <!-- URL Pública -->
+        <div class="card">
+            <h3>🔗 Enlace de Reservas</h3>
+            <p style="margin-bottom: 1rem; color: #6b7280;">Comparte este enlace con tus clientes para que puedan reservar online</p>
+            
+            <div class="url-card">
+                <h4 style="margin-bottom: 0.5rem;">📱 URL de Reservas</h4>
+                <div class="url-display" id="bookingUrl">https://reservaspro.netlify.app/booking.html</div>
+                <button class="btn" onclick="copyUrl()">📋 Copiar URL</button>
+                <button class="btn btn-secondary" onclick="openBookingPage()">👁️ Ver Página</button>
+                <button class="btn btn-warning" onclick="generateQR()">📱 Generar QR</button>
+            </div>
+        </div>
+        
+        <!-- QR Code -->
+        <div class="card" id="qrSection" style="display: none;">
+            <h3>📱 Código QR</h3>
+            <p style="margin-bottom: 1rem; color: #6b7280;">Los clientes pueden escanear este código para acceder directamente a las reservas</p>
+            <div class="qr-container">
+                <div id="qrcode"></div>
+                <p style="margin-top: 1rem;">Escanea para reservar una cita</p>
+                <button class="btn" onclick="downloadQR()">⬇️ Descargar QR</button>
+            </div>
+        </div>
+        
+        <!-- Reservas Pendientes -->
+        <div class="card">
+            <h3>⏳ Reservas Pendientes de Confirmación</h3>
+            <div id="pendingList">
+                <p style="color: #6b7280; text-align: center; padding: 2rem;">No hay reservas pendientes</p>
+            </div>
+        </div>
+        
+        <!-- Configuración -->
+        <div class="card">
+            <h3>⚙️ Configuración de Reservas Públicas</h3>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="enablePublicBooking" checked>
+                    <span>Activar reservas públicas</span>
+                </label>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">Días de antelación máxima:</label>
+                <select id="maxAdvanceDays" style="padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+                    <option value="7">7 días</option>
+                    <option value="14" selected>14 días</option>
+                    <option value="30">30 días</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="requireConfirmation" checked>
+                    <span>Requiere confirmación manual</span>
+                </label>
+                <small style="color: #6b7280;">Si está desactivado, las reservas se confirman automáticamente</small>
+            </div>
+            
+            <button class="btn" onclick="savePublicBookingSettings()">💾 Guardar Configuración</button>
+        </div>
+    </div>
+
+    <script>
+        function updateStats() {
+            const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            const publicBookings = appointments.filter(apt => apt.source === 'public_booking');
+            
+            document.getElementById('totalReservations').textContent = publicBookings.length;
+            document.getElementById('pendingReservations').textContent = 
+                publicBookings.filter(apt => apt.status === 'pending').length;
+            document.getElementById('confirmedReservations').textContent = 
+                publicBookings.filter(apt => apt.status === 'confirmed').length;
+                
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('todayReservations').textContent = 
+                publicBookings.filter(apt => apt.date === today).length;
+        }
+        
+        function loadPendingReservations() {
+            const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            const pending = appointments.filter(apt => apt.source === 'public_booking' && apt.status === 'pending');
+            
+            const container = document.getElementById('pendingList');
+            
+            if (pending.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 2rem;">No hay reservas pendientes</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            pending.forEach(reservation => {
+                const item = document.createElement('div');
+                item.className = 'reservation-item';
+                item.innerHTML = `
+                    <div>
+                        <h4>${reservation.client}</h4>
+                        <p>${reservation.service} - ${reservation.date} a las ${reservation.time}</p>
+                        <small>📱 ${reservation.phone}</small>
+                    </div>
+                    <div>
+                        <button class="btn" onclick="confirmReservation('${reservation.id}')">✅ Confirmar</button>
+                        <button class="btn" style="background: #ef4444;" onclick="rejectReservation('${reservation.id}')">❌ Rechazar</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function confirmReservation(id) {
+            const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            const appointment = appointments.find(apt => apt.id === id);
+            
+            if (appointment) {
+                appointment.status = 'confirmed';
+                localStorage.setItem('appointments', JSON.stringify(appointments));
+                
+                // Enviar notificación de confirmación
+                if (window.notificationManager) {
+                    window.notificationManager.sendBookingConfirmation(appointment);
+                }
+                
+                updateStats();
+                loadPendingReservations();
+                alert('✅ Reserva confirmada y notificación enviada al cliente');
+            }
+        }
+        
+        function rejectReservation(id) {
+            if (!confirm('¿Seguro que quieres rechazar esta reserva?')) return;
+            
+            const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            const appointmentIndex = appointments.findIndex(apt => apt.id === id);
+            
+            if (appointmentIndex !== -1) {
+                const appointment = appointments[appointmentIndex];
+                
+                // Enviar notificación de cancelación
+                if (window.notificationManager) {
+                    window.notificationManager.sendCancellationNotice(appointment);
+                }
+                
+                appointments.splice(appointmentIndex, 1);
+                localStorage.setItem('appointments', JSON.stringify(appointments));
+                
+                updateStats();
+                loadPendingReservations();
+                alert('❌ Reserva rechazada y cliente notificado');
+            }
+        }
+        
+        function copyUrl() {
+            const url = document.getElementById('bookingUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('📋 URL copiada al portapapeles');
+            });
+        }
+        
+        function openBookingPage() {
+            window.open('../booking.html', '_blank');
+        }
+        
+        function generateQR() {
+            const qrSection = document.getElementById('qrSection');
+            qrSection.style.display = 'block';
+            
+            // En una implementación real, usarías una librería como QR.js
+            document.getElementById('qrcode').innerHTML = `
+                <div style="width: 200px; height: 200px; background: #000; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; border-radius: 8px;">
+                    📱 QR Code<br>
+                    <small>reservaspro.netlify.app/booking.html</small>
+                </div>
+            `;
+        }
+        
+        function downloadQR() {
+            alert('🚀 En producción: se descargaría el código QR como imagen PNG');
+        }
+        
+        function savePublicBookingSettings() {
+            const settings = {
+                enabled: document.getElementById('enablePublicBooking').checked,
+                maxAdvanceDays: parseInt(document.getElementById('maxAdvanceDays').value),
+                requireConfirmation: document.getElementById('requireConfirmation').checked
+            };
+            
+            localStorage.setItem('publicBookingSettings', JSON.stringify(settings));
+            alert('✅ Configuración guardada');
+        }
+        
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('publicBookingSettings') || '{}');
+            
+            if (settings.enabled !== undefined) {
+                document.getElementById('enablePublicBooking').checked = settings.enabled;
+            }
+            if (settings.maxAdvanceDays) {
+                document.getElementById('maxAdvanceDays').value = settings.maxAdvanceDays;
+            }
+            if (settings.requireConfirmation !== undefined) {
+                document.getElementById('requireConfirmation').checked = settings.requireConfirmation;
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            loadPendingReservations();
+            loadSettings();
+            
+            // Refresh stats every 30 seconds
+            setInterval(() => {
+                updateStats();
+                loadPendingReservations();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
