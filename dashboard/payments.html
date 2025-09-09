@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos - ReservasPro</title>
+    <link rel="stylesheet" href="../css/mobile-optimization.css">
+    <style>
+        .payments-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .payment-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .payment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .payment-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .payment-card p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .payment-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-inactive {
+            background: rgba(220, 38, 38, 0.2);
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+        
+        .payment-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-payment {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-payment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+        }
+        
+        .btn-payment.stripe {
+            background: linear-gradient(135deg, #635bff, #7c3aed);
+        }
+        
+        .btn-payment.paypal {
+            background: linear-gradient(135deg, #0070ba, #009cde);
+        }
+        
+        .btn-payment.square {
+            background: linear-gradient(135deg, #00a86b, #00d4aa);
+        }
+        
+        .btn-payment.secondary {
+            background: rgba(107, 114, 128, 0.8);
+        }
+        
+        .btn-payment.secondary:hover {
+            background: rgba(107, 114, 128, 1);
+        }
+        
+        .transactions-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .transactions-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .transaction-filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .transaction-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .transaction-content {
+            flex: 1;
+        }
+        
+        .transaction-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .transaction-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+        }
+        
+        .transaction-amount {
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .transaction-amount.positive {
+            color: #10b981;
+        }
+        
+        .transaction-amount.negative {
+            color: #dc2626;
+        }
+        
+        .pricing-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .pricing-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .pricing-card:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-4px);
+        }
+        
+        .pricing-card.featured {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .pricing-card h4 {
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pricing-price {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pricing-features li {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .pricing-features li::before {
+            content: '✅';
+            font-size: 0.875rem;
+        }
+        
+        .pricing-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .pricing-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+        }
+        
+        .pricing-btn.featured {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .pricing-btn.featured:hover {
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .payment-form {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-group select option {
+            background: #374151;
+            color: white;
+        }
+        
+        .payment-summary {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .summary-row.total {
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .transaction-filters {
+                flex-direction: column;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .transactions-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">💳 ReservasPro</a>
+        <span style="color: rgba(255, 255, 255, 0.8);">Sistema de Pagos</span>
+    </header>
+    
+    <div class="container">
+        <div class="payments-container">
+            <!-- Métodos de Pago -->
+            <div class="payment-methods">
+                <div class="payment-card">
+                    <h3>💳 Stripe</h3>
+                    <div class="payment-status status-active">
+                        <span>✅</span>
+                        <span>Activo</span>
+                    </div>
+                    <p>Procesamiento de pagos con tarjetas de crédito y débito. Comisión del 2.9% + €0.30 por transacción.</p>
+                    <div class="payment-actions">
+                        <button class="btn-payment stripe" onclick="configureStripe()">⚙️ Configurar</button>
+                        <button class="btn-payment secondary" onclick="viewStripeDocs()">📚 Documentación</button>
+                    </div>
+                </div>
+                
+                <div class="payment-card">
+                    <h3>🅿️ PayPal</h3>
+                    <div class="payment-status status-pending">
+                        <span>⏳</span>
+                        <span>Pendiente</span>
+                    </div>
+                    <p>Pagos a través de PayPal. Comisión del 3.4% + €0.35 por transacción. Ideal para pagos internacionales.</p>
+                    <div class="payment-actions">
+                        <button class="btn-payment paypal" onclick="configurePayPal()">⚙️ Configurar</button>
+                        <button class="btn-payment secondary" onclick="viewPayPalDocs()">📚 Documentación</button>
+                    </div>
+                </div>
+                
+                <div class="payment-card">
+                    <h3>⬜ Square</h3>
+                    <div class="payment-status status-inactive">
+                        <span>❌</span>
+                        <span>Inactivo</span>
+                    </div>
+                    <p>Terminal de pagos físico y online. Comisión del 2.6% + €0.10 por transacción. Perfecto para tiendas físicas.</p>
+                    <div class="payment-actions">
+                        <button class="btn-payment square" onclick="configureSquare()">⚙️ Configurar</button>
+                        <button class="btn-payment secondary" onclick="viewSquareDocs()">📚 Documentación</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Planes de Precios -->
+            <div class="pricing-section">
+                <h2 class="pricing-title">💰 Planes de Suscripción</h2>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h4>Básico</h4>
+                        <div class="pricing-price">€19/mes</div>
+                        <ul class="pricing-features">
+                            <li>Hasta 100 reservas/mes</li>
+                            <li>1 usuario</li>
+                            <li>Soporte por email</li>
+                            <li>Calendario básico</li>
+                            <li>Notificaciones SMS</li>
+                        </ul>
+                        <button class="pricing-btn" onclick="selectPlan('basic')">Seleccionar</button>
+                    </div>
+                    
+                    <div class="pricing-card featured">
+                        <h4>Profesional</h4>
+                        <div class="pricing-price">€39/mes</div>
+                        <ul class="pricing-features">
+                            <li>Hasta 500 reservas/mes</li>
+                            <li>3 usuarios</li>
+                            <li>Soporte prioritario</li>
+                            <li>Calendario avanzado</li>
+                            <li>Analytics completos</li>
+                            <li>Integración de pagos</li>
+                            <li>WhatsApp Business</li>
+                        </ul>
+                        <button class="pricing-btn featured" onclick="selectPlan('professional')">Seleccionar</button>
+                    </div>
+                    
+                    <div class="pricing-card">
+                        <h4>Empresarial</h4>
+                        <div class="pricing-price">€79/mes</div>
+                        <ul class="pricing-features">
+                            <li>Reservas ilimitadas</li>
+                            <li>Usuarios ilimitados</li>
+                            <li>Soporte 24/7</li>
+                            <li>API completa</li>
+                            <li>White-label</li>
+                            <li>Integración personalizada</li>
+                            <li>Gerente de cuenta</li>
+                        </ul>
+                        <button class="pricing-btn" onclick="selectPlan('enterprise')">Seleccionar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulario de Pago -->
+            <div class="payment-form">
+                <h3>💳 Procesar Pago</h3>
+                <form id="paymentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Nombre del Cliente</label>
+                            <input type="text" id="customerName" placeholder="Juan Pérez" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail">Email</label>
+                            <input type="email" id="customerEmail" placeholder="juan@email.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="service">Servicio</label>
+                            <select id="service" required>
+                                <option value="">Seleccionar servicio</option>
+                                <option value="corte">Corte - €25</option>
+                                <option value="tinte">Tinte - €45</option>
+                                <option value="mechas">Mechas - €65</option>
+                                <option value="tratamiento">Tratamiento - €35</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentMethod">Método de Pago</label>
+                            <select id="paymentMethod" required>
+                                <option value="">Seleccionar método</option>
+                                <option value="stripe">Tarjeta de Crédito/Débito</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="cash">Efectivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount">Cantidad (€)</label>
+                        <input type="number" id="amount" step="0.01" min="0" placeholder="25.00" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Notas del Pago</label>
+                        <input type="text" id="notes" placeholder="Pago por reserva del 15 de enero...">
+                    </div>
+                    
+                    <div class="payment-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">€0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Comisión (2.9%):</span>
+                            <span id="commission">€0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>IVA (21%):</span>
+                            <span id="tax">€0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="total">€0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-actions">
+                        <button type="submit" class="btn-payment stripe">💳 Procesar Pago</button>
+                        <button type="button" class="btn-payment secondary" onclick="clearForm()">🔄 Limpiar</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Transacciones Recientes -->
+            <div class="transactions-section">
+                <div class="transactions-header">
+                    <h3 class="transactions-title">📊 Transacciones Recientes</h3>
+                    <div class="transaction-filters">
+                        <button class="filter-btn active" onclick="filterTransactions('all')">Todas</button>
+                        <button class="filter-btn" onclick="filterTransactions('stripe')">Stripe</button>
+                        <button class="filter-btn" onclick="filterTransactions('paypal')">PayPal</button>
+                        <button class="filter-btn" onclick="filterTransactions('cash')">Efectivo</button>
+                    </div>
+                </div>
+                
+                <div class="transaction-list" id="transactionList">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let transactions = [
+            {
+                id: 1,
+                customer: 'Ana García',
+                service: 'Corte',
+                amount: 25.00,
+                method: 'stripe',
+                status: 'completed',
+                date: '2025-01-15',
+                time: '14:30'
+            },
+            {
+                id: 2,
+                customer: 'María López',
+                service: 'Tinte',
+                amount: 45.00,
+                method: 'paypal',
+                status: 'completed',
+                date: '2025-01-15',
+                time: '16:45'
+            },
+            {
+                id: 3,
+                customer: 'Carlos Ruiz',
+                service: 'Mechas',
+                amount: 65.00,
+                method: 'stripe',
+                status: 'pending',
+                date: '2025-01-15',
+                time: '18:20'
+            },
+            {
+                id: 4,
+                customer: 'Laura Martín',
+                service: 'Tratamiento',
+                amount: 35.00,
+                method: 'cash',
+                status: 'completed',
+                date: '2025-01-14',
+                time: '11:15'
+            }
+        ];
+        
+        let currentFilter = 'all';
+        
+        // Cargar transacciones al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTransactions();
+            setupPaymentForm();
+        });
+        
+        function loadTransactions() {
+            const transactionList = document.getElementById('transactionList');
+            transactionList.innerHTML = '';
+            
+            const filteredTransactions = currentFilter === 'all' 
+                ? transactions 
+                : transactions.filter(t => t.method === currentFilter);
+            
+            filteredTransactions.forEach(transaction => {
+                const transactionEl = createTransactionElement(transaction);
+                transactionList.appendChild(transactionEl);
+            });
+        }
+        
+        function createTransactionElement(transaction) {
+            const transactionEl = document.createElement('div');
+            transactionEl.className = 'transaction-item';
+            
+            const methodIcons = {
+                stripe: '💳',
+                paypal: '🅿️',
+                cash: '💵'
+            };
+            
+            const statusColors = {
+                completed: 'positive',
+                pending: 'negative',
+                failed: 'negative'
+            };
+            
+            transactionEl.innerHTML = `
+                <div class="transaction-icon" style="background: ${getMethodColor(transaction.method)}">
+                    ${methodIcons[transaction.method]}
+                </div>
+                <div class="transaction-content">
+                    <div class="transaction-title">${transaction.customer}</div>
+                    <div class="transaction-subtitle">${transaction.service} • ${transaction.date} ${transaction.time}</div>
+                </div>
+                <div class="transaction-amount ${statusColors[transaction.status]}">
+                    €${transaction.amount.toFixed(2)}
+                </div>
+            `;
+            
+            return transactionEl;
+        }
+        
+        function getMethodColor(method) {
+            const colors = {
+                stripe: 'linear-gradient(135deg, #635bff, #7c3aed)',
+                paypal: 'linear-gradient(135deg, #0070ba, #009cde)',
+                cash: 'linear-gradient(135deg, #10b981, #059669)'
+            };
+            return colors[method] || 'linear-gradient(135deg, #6b7280, #4b5563)';
+        }
+        
+        function filterTransactions(filter) {
+            currentFilter = filter;
+            
+            // Actualizar botones de filtro
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadTransactions();
+        }
+        
+        function setupPaymentForm() {
+            const form = document.getElementById('paymentForm');
+            const amountInput = document.getElementById('amount');
+            const serviceSelect = document.getElementById('service');
+            
+            // Actualizar cantidad cuando se selecciona un servicio
+            serviceSelect.addEventListener('change', function() {
+                const prices = {
+                    'corte': 25,
+                    'tinte': 45,
+                    'mechas': 65,
+                    'tratamiento': 35
+                };
+                
+                if (prices[this.value]) {
+                    amountInput.value = prices[this.value];
+                    updatePaymentSummary();
+                }
+            });
+            
+            // Actualizar resumen cuando cambia la cantidad
+            amountInput.addEventListener('input', updatePaymentSummary);
+            
+            // Manejar envío del formulario
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                processPayment();
+            });
+        }
+        
+        function updatePaymentSummary() {
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            const commission = amount * 0.029; // 2.9%
+            const subtotal = amount + commission;
+            const tax = subtotal * 0.21; // 21% IVA
+            const total = subtotal + tax;
+            
+            document.getElementById('subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('commission').textContent = `€${commission.toFixed(2)}`;
+            document.getElementById('tax').textContent = `€${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `€${total.toFixed(2)}`;
+        }
+        
+        function processPayment() {
+            const formData = new FormData(document.getElementById('paymentForm'));
+            const paymentData = {
+                customer: formData.get('customerName'),
+                email: formData.get('customerEmail'),
+                service: formData.get('service'),
+                method: formData.get('paymentMethod'),
+                amount: parseFloat(formData.get('amount')),
+                notes: formData.get('notes'),
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            showNotification('Procesando pago...', 'info');
+            
+            // Simular procesamiento de pago
+            setTimeout(() => {
+                // Agregar nueva transacción
+                const newTransaction = {
+                    id: transactions.length + 1,
+                    customer: paymentData.customer,
+                    service: paymentData.service,
+                    amount: paymentData.amount,
+                    method: paymentData.method,
+                    status: 'completed',
+                    date: paymentData.date,
+                    time: paymentData.time
+                };
+                
+                transactions.unshift(newTransaction);
+                loadTransactions();
+                
+                showNotification('Pago procesado correctamente', 'success');
+                clearForm();
+            }, 2000);
+        }
+        
+        function clearForm() {
+            document.getElementById('paymentForm').reset();
+            updatePaymentSummary();
+        }
+        
+        function selectPlan(plan) {
+            const plans = {
+                basic: { name: 'Básico', price: 19 },
+                professional: { name: 'Profesional', price: 39 },
+                enterprise: { name: 'Empresarial', price: 79 }
+            };
+            
+            const selectedPlan = plans[plan];
+            showNotification(`Plan ${selectedPlan.name} seleccionado (€${selectedPlan.price}/mes)`, 'success');
+        }
+        
+        function configureStripe() {
+            showNotification('Abriendo configuración de Stripe...', 'info');
+        }
+        
+        function configurePayPal() {
+            showNotification('Abriendo configuración de PayPal...', 'info');
+        }
+        
+        function configureSquare() {
+            showNotification('Abriendo configuración de Square...', 'info');
+        }
+        
+        function viewStripeDocs() {
+            showNotification('Abriendo documentación de Stripe...', 'info');
+        }
+        
+        function viewPayPalDocs() {
+            showNotification('Abriendo documentación de PayPal...', 'info');
+        }
+        
+        function viewSquareDocs() {
+            showNotification('Abriendo documentación de Square...', 'info');
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

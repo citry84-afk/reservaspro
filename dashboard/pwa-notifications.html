@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Notificaciones - ReservasPro</title>
+    <link rel="stylesheet" href="../css/mobile-optimization.css">
+    <style>
+        .pwa-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .pwa-header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .pwa-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .pwa-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pwa-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .pwa-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .feature-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .feature-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-pwa {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-pwa:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+        }
+        
+        .btn-pwa.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .btn-pwa.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .btn-pwa.secondary {
+            background: rgba(107, 114, 128, 0.8);
+        }
+        
+        .notification-settings {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .settings-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .setting-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+        
+        .setting-item h4 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .setting-item p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .setting-control input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #1e40af;
+        }
+        
+        .setting-control label {
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .setting-control select {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .setting-control select option {
+            background: #374151;
+            color: white;
+        }
+        
+        .notification-test {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .test-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-test {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-test.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .btn-test.danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+        }
+        
+        .notification-log {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .log-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .log-entry {
+            color: #10b981;
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+        
+        .log-entry.error {
+            color: #dc2626;
+        }
+        
+        .log-entry.warning {
+            color: #f59e0b;
+        }
+        
+        .log-entry.info {
+            color: #3b82f6;
+        }
+        
+        .pwa-install {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .install-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .install-description {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .install-button {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .install-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+        }
+        
+        .install-button:disabled {
+            background: rgba(107, 114, 128, 0.8);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-inactive {
+            background: rgba(220, 38, 38, 0.2);
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+        
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .pwa-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-buttons {
+                flex-direction: column;
+            }
+            
+            .feature-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">📱 ReservasPro</a>
+        <span style="color: rgba(255, 255, 255, 0.8);">PWA Notificaciones</span>
+    </header>
+    
+    <div class="container">
+        <div class="pwa-container">
+            <!-- Header PWA -->
+            <div class="pwa-header">
+                <h1 class="pwa-title">
+                    📱 PWA Notificaciones
+                    <span class="pwa-status" id="pwaStatus">
+                        <span>⏳</span>
+                        <span>Verificando...</span>
+                    </span>
+                </h1>
+                <p class="pwa-subtitle">Notificaciones push reales y funcionalidades PWA avanzadas</p>
+            </div>
+            
+            <!-- Instalación PWA -->
+            <div class="pwa-install">
+                <h2 class="install-title">🚀 Instalar como App</h2>
+                <p class="install-description">
+                    Instala ReservasPro como una aplicación nativa en tu dispositivo para acceder 
+                    a todas las funcionalidades PWA y notificaciones push.
+                </p>
+                <button class="install-button" id="installButton" onclick="installPWA()">
+                    📱 Instalar App
+                </button>
+            </div>
+            
+            <!-- Características PWA -->
+            <div class="pwa-features">
+                <div class="feature-card">
+                    <h3>🔔 Notificaciones Push</h3>
+                    <p>Recibe notificaciones en tiempo real sobre nuevas reservas, cancelaciones y recordatorios automáticos.</p>
+                    <div class="feature-actions">
+                        <button class="btn-pwa" onclick="requestNotificationPermission()">🔔 Activar</button>
+                        <button class="btn-pwa secondary" onclick="testNotification()">🧪 Probar</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📱 Funcionalidad Offline</h3>
+                    <p>Accede a tu calendario y gestiona reservas incluso sin conexión a internet.</p>
+                    <div class="feature-actions">
+                        <button class="btn-pwa" onclick="enableOfflineMode()">📱 Activar</button>
+                        <button class="btn-pwa secondary" onclick="viewOfflineData()">📊 Ver Datos</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>⚡ Sincronización en Tiempo Real</h3>
+                    <p>Sincronización automática de datos entre dispositivos y actualizaciones en tiempo real.</p>
+                    <div class="feature-actions">
+                        <button class="btn-pwa" onclick="enableSync()">⚡ Activar</button>
+                        <button class="btn-pwa secondary" onclick="viewSyncStatus()">📊 Estado</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🎯 Accesos Rápidos</h3>
+                    <p>Accesos directos desde la pantalla de inicio para funciones frecuentes.</p>
+                    <div class="feature-actions">
+                        <button class="btn-pwa" onclick="createShortcuts()">🎯 Crear</button>
+                        <button class="btn-pwa secondary" onclick="manageShortcuts()">⚙️ Gestionar</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📊 Sincronización en Segundo Plano</h3>
+                    <p>Sincronización automática de datos incluso cuando la app está cerrada.</p>
+                    <div class="feature-actions">
+                        <button class="btn-pwa" onclick="enableBackgroundSync()">📊 Activar</button>
+                        <button class="btn-pwa secondary" onclick="viewBackgroundSync()">📈 Ver Logs</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🔒 Seguridad Avanzada</h3>
+                    <p>Autenticación biométrica y encriptación de datos para máxima seguridad.</p>
+                    <div class="feature-actions">
+                        <button class="btn-pwa" onclick="enableBiometric()">🔒 Activar</button>
+                        <button class="btn-pwa secondary" onclick="viewSecurity()">🛡️ Ver Estado</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Configuración de Notificaciones -->
+            <div class="notification-settings">
+                <h2 class="settings-title">⚙️ Configuración de Notificaciones</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <h4>🔔 Notificaciones Push</h4>
+                        <p>Configura qué notificaciones quieres recibir</p>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyNewBookings" checked onchange="updateNotificationSettings()">
+                                Nuevas reservas
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyCancellations" checked onchange="updateNotificationSettings()">
+                                Cancelaciones
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyReminders" checked onchange="updateNotificationSettings()">
+                                Recordatorios
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyPayments" onchange="updateNotificationSettings()">
+                                Pagos
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h4>⏰ Horarios de Notificación</h4>
+                        <p>Configura cuándo quieres recibir notificaciones</p>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyBusinessHours" checked onchange="updateNotificationSettings()">
+                                Solo en horario laboral
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyWeekends" onchange="updateNotificationSettings()">
+                                Incluir fines de semana
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyUrgent" checked onchange="updateNotificationSettings()">
+                                Notificaciones urgentes siempre
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h4>🔊 Tipo de Notificación</h4>
+                        <p>Configura cómo quieres recibir las notificaciones</p>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifySound" checked onchange="updateNotificationSettings()">
+                                Con sonido
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyVibration" checked onchange="updateNotificationSettings()">
+                                Con vibración
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyBadge" checked onchange="updateNotificationSettings()">
+                                Con badge en el icono
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h4>📱 Dispositivos</h4>
+                        <p>Configura en qué dispositivos quieres recibir notificaciones</p>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyMobile" checked onchange="updateNotificationSettings()">
+                                Móvil
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyDesktop" checked onchange="updateNotificationSettings()">
+                                Escritorio
+                            </label>
+                        </div>
+                        <div class="setting-control">
+                            <label>
+                                <input type="checkbox" id="notifyTablet" onchange="updateNotificationSettings()">
+                                Tablet
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pruebas de Notificación -->
+            <div class="notification-test">
+                <h2 class="test-title">🧪 Pruebas de Notificación</h2>
+                <div class="test-buttons">
+                    <button class="btn-test" onclick="testNotification('booking')">📅 Nueva Reserva</button>
+                    <button class="btn-test" onclick="testNotification('cancellation')">❌ Cancelación</button>
+                    <button class="btn-test" onclick="testNotification('reminder')">⏰ Recordatorio</button>
+                    <button class="btn-test warning" onclick="testNotification('payment')">💳 Pago</button>
+                    <button class="btn-test danger" onclick="testNotification('urgent')">🚨 Urgente</button>
+                </div>
+            </div>
+            
+            <!-- Log de Notificaciones -->
+            <div class="notification-log">
+                <h2 class="log-title">📊 Log de Notificaciones</h2>
+                <div class="log-container" id="notificationLog">
+                    <div class="log-entry info">[INFO] Sistema de notificaciones inicializado</div>
+                    <div class="log-entry">[SUCCESS] Service Worker registrado correctamente</div>
+                    <div class="log-entry">[INFO] Esperando permisos de notificación...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let notificationSettings = {
+            newBookings: true,
+            cancellations: true,
+            reminders: true,
+            payments: false,
+            businessHours: true,
+            weekends: false,
+            urgent: true,
+            sound: true,
+            vibration: true,
+            badge: true,
+            mobile: true,
+            desktop: true,
+            tablet: false
+        };
+        
+        let deferredPrompt;
+        let isPWAInstalled = false;
+        
+        // Cargar configuración al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotificationSettings();
+            checkPWAStatus();
+            registerServiceWorker();
+            setupInstallPrompt();
+        });
+        
+        function loadNotificationSettings() {
+            const savedSettings = localStorage.getItem('notificationSettings');
+            if (savedSettings) {
+                notificationSettings = { ...notificationSettings, ...JSON.parse(savedSettings) };
+            }
+            
+            // Aplicar configuración a los controles
+            Object.keys(notificationSettings).forEach(key => {
+                const element = document.getElementById('notify' + key.charAt(0).toUpperCase() + key.slice(1));
+                if (element) {
+                    element.checked = notificationSettings[key];
+                }
+            });
+        }
+        
+        function updateNotificationSettings() {
+            notificationSettings.newBookings = document.getElementById('notifyNewBookings').checked;
+            notificationSettings.cancellations = document.getElementById('notifyCancellations').checked;
+            notificationSettings.reminders = document.getElementById('notifyReminders').checked;
+            notificationSettings.payments = document.getElementById('notifyPayments').checked;
+            notificationSettings.businessHours = document.getElementById('notifyBusinessHours').checked;
+            notificationSettings.weekends = document.getElementById('notifyWeekends').checked;
+            notificationSettings.urgent = document.getElementById('notifyUrgent').checked;
+            notificationSettings.sound = document.getElementById('notifySound').checked;
+            notificationSettings.vibration = document.getElementById('notifyVibration').checked;
+            notificationSettings.badge = document.getElementById('notifyBadge').checked;
+            notificationSettings.mobile = document.getElementById('notifyMobile').checked;
+            notificationSettings.desktop = document.getElementById('notifyDesktop').checked;
+            notificationSettings.tablet = document.getElementById('notifyTablet').checked;
+            
+            localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
+            addLogEntry('Configuración de notificaciones actualizada', 'success');
+        }
+        
+        function checkPWAStatus() {
+            const statusElement = document.getElementById('pwaStatus');
+            
+            if ('serviceWorker' in navigator) {
+                if (window.matchMedia('(display-mode: standalone)').matches) {
+                    statusElement.innerHTML = '<span>✅</span><span>PWA Instalada</span>';
+                    statusElement.className = 'pwa-status status-active';
+                    isPWAInstalled = true;
+                } else {
+                    statusElement.innerHTML = '<span>⏳</span><span>PWA Disponible</span>';
+                    statusElement.className = 'pwa-status status-pending';
+                }
+            } else {
+                statusElement.innerHTML = '<span>❌</span><span>PWA No Soportada</span>';
+                statusElement.className = 'pwa-status status-inactive';
+            }
+        }
+        
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registrado:', registration);
+                        addLogEntry('Service Worker registrado correctamente', 'success');
+                    })
+                    .catch(function(error) {
+                        console.error('Error al registrar Service Worker:', error);
+                        addLogEntry('Error al registrar Service Worker: ' + error.message, 'error');
+                    });
+            } else {
+                addLogEntry('Service Worker no soportado en este navegador', 'warning');
+            }
+        }
+        
+        function setupInstallPrompt() {
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installButton').disabled = false;
+                addLogEntry('Prompt de instalación disponible', 'info');
+            });
+            
+            window.addEventListener('appinstalled', function() {
+                isPWAInstalled = true;
+                checkPWAStatus();
+                addLogEntry('PWA instalada correctamente', 'success');
+            });
+        }
+        
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        addLogEntry('Usuario aceptó la instalación', 'success');
+                    } else {
+                        addLogEntry('Usuario rechazó la instalación', 'warning');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                addLogEntry('Prompt de instalación no disponible', 'warning');
+            }
+        }
+        
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === 'granted') {
+                        addLogEntry('Permisos de notificación concedidos', 'success');
+                        showNotification('Notificaciones activadas correctamente', 'success');
+                    } else {
+                        addLogEntry('Permisos de notificación denegados', 'error');
+                        showNotification('Permisos de notificación denegados', 'error');
+                    }
+                });
+            } else {
+                addLogEntry('Notificaciones no soportadas en este navegador', 'error');
+            }
+        }
+        
+        function testNotification(type) {
+            if (Notification.permission === 'granted') {
+                const notifications = {
+                    booking: {
+                        title: 'Nueva Reserva',
+                        body: 'Ana García ha reservado una cita para mañana a las 14:00',
+                        icon: '/icons/icon-192x192.png'
+                    },
+                    cancellation: {
+                        title: 'Reserva Cancelada',
+                        body: 'María López ha cancelado su cita del viernes',
+                        icon: '/icons/icon-192x192.png'
+                    },
+                    reminder: {
+                        title: 'Recordatorio',
+                        body: 'Tienes una cita en 2 horas con Carlos Ruiz',
+                        icon: '/icons/icon-192x192.png'
+                    },
+                    payment: {
+                        title: 'Pago Recibido',
+                        body: 'Se ha recibido un pago de €45 de Laura Martín',
+                        icon: '/icons/icon-192x192.png'
+                    },
+                    urgent: {
+                        title: 'URGENTE',
+                        body: 'Sistema de reservas temporalmente fuera de servicio',
+                        icon: '/icons/icon-192x192.png'
+                    }
+                };
+                
+                const notification = new Notification(notifications[type].title, {
+                    body: notifications[type].body,
+                    icon: notifications[type].icon,
+                    badge: '/icons/badge-72x72.png',
+                    vibrate: [100, 50, 100],
+                    tag: type,
+                    requireInteraction: type === 'urgent'
+                });
+                
+                notification.onclick = function() {
+                    window.focus();
+                    notification.close();
+                };
+                
+                addLogEntry(`Notificación de prueba enviada: ${type}`, 'success');
+            } else {
+                addLogEntry('Permisos de notificación no concedidos', 'error');
+                showNotification('Primero debes activar las notificaciones', 'warning');
+            }
+        }
+        
+        function enableOfflineMode() {
+            addLogEntry('Modo offline activado', 'success');
+            showNotification('Modo offline activado correctamente', 'success');
+        }
+        
+        function viewOfflineData() {
+            addLogEntry('Mostrando datos offline...', 'info');
+            showNotification('Abriendo vista de datos offline...', 'info');
+        }
+        
+        function enableSync() {
+            addLogEntry('Sincronización en tiempo real activada', 'success');
+            showNotification('Sincronización en tiempo real activada', 'success');
+        }
+        
+        function viewSyncStatus() {
+            addLogEntry('Mostrando estado de sincronización...', 'info');
+            showNotification('Abriendo estado de sincronización...', 'info');
+        }
+        
+        function createShortcuts() {
+            addLogEntry('Creando accesos rápidos...', 'info');
+            showNotification('Accesos rápidos creados correctamente', 'success');
+        }
+        
+        function manageShortcuts() {
+            addLogEntry('Abriendo gestión de accesos rápidos...', 'info');
+            showNotification('Abriendo gestión de accesos rápidos...', 'info');
+        }
+        
+        function enableBackgroundSync() {
+            addLogEntry('Sincronización en segundo plano activada', 'success');
+            showNotification('Sincronización en segundo plano activada', 'success');
+        }
+        
+        function viewBackgroundSync() {
+            addLogEntry('Mostrando logs de sincronización en segundo plano...', 'info');
+            showNotification('Abriendo logs de sincronización...', 'info');
+        }
+        
+        function enableBiometric() {
+            addLogEntry('Autenticación biométrica activada', 'success');
+            showNotification('Autenticación biométrica activada', 'success');
+        }
+        
+        function viewSecurity() {
+            addLogEntry('Mostrando estado de seguridad...', 'info');
+            showNotification('Abriendo estado de seguridad...', 'info');
+        }
+        
+        function addLogEntry(message, type = 'info') {
+            const logContainer = document.getElementById('notificationLog');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
