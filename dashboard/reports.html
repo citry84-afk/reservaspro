@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - ReservasPro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f8fafc; }
+        .header { 
+            background: white; 
+            padding: 1rem; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .logo { font-size: 1.25rem; font-weight: bold; color: #1e40af; text-decoration: none; }
+        .btn { 
+            padding: 0.75rem 1.5rem; 
+            border: none; 
+            border-radius: 8px; 
+            background: #1e40af; 
+            color: white; 
+            text-decoration: none; 
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover { background: #1e3a8a; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .reports-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 1.5rem; 
+            margin-bottom: 2rem; 
+        }
+        .report-card { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            border-left: 4px solid #1e40af;
+            transition: all 0.3s;
+        }
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .report-card h3 { 
+            color: #374151; 
+            margin-bottom: 1rem; 
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .report-card p { 
+            color: #6b7280; 
+            margin-bottom: 1.5rem; 
+            line-height: 1.5;
+        }
+        .report-actions { 
+            display: flex; 
+            gap: 0.5rem; 
+            flex-wrap: wrap;
+        }
+        .report-btn { 
+            background: #1e40af; 
+            color: white; 
+            border: none; 
+            padding: 0.5rem 1rem; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 0.875rem; 
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .report-btn:hover { 
+            background: #1d4ed8; 
+        }
+        .report-btn.secondary { 
+            background: #6b7280; 
+        }
+        .report-btn.secondary:hover { 
+            background: #4b5563; 
+        }
+        .report-btn.success { 
+            background: #10b981; 
+        }
+        .report-btn.success:hover { 
+            background: #059669; 
+        }
+        .scheduled-reports { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            margin-bottom: 2rem;
+        }
+        .scheduled-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 1rem; 
+            border-bottom: 1px solid #f3f4f6; 
+        }
+        .scheduled-item:last-child { border-bottom: none; }
+        .scheduled-info h4 { 
+            color: #374151; 
+            margin-bottom: 0.25rem; 
+        }
+        .scheduled-info p { 
+            color: #6b7280; 
+            font-size: 0.875rem; 
+        }
+        .scheduled-actions { 
+            display: flex; 
+            gap: 0.5rem; 
+        }
+        .status-badge { 
+            padding: 0.25rem 0.75rem; 
+            border-radius: 12px; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            margin-left: 1rem;
+        }
+        .status-active { 
+            background: #dcfce7; 
+            color: #166534; 
+        }
+        .status-paused { 
+            background: #fef3c7; 
+            color: #92400e; 
+        }
+        .status-error { 
+            background: #fecaca; 
+            color: #991b1b; 
+        }
+        .custom-report { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            margin-bottom: 2rem;
+        }
+        .form-group { 
+            margin-bottom: 1rem; 
+        }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            color: #374151; 
+            font-weight: 500; 
+        }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 0.75rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            font-size: 0.875rem;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+        .form-row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 1rem; 
+        }
+        .checkbox-group { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 1rem; 
+            margin-top: 0.5rem; 
+        }
+        .checkbox-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+        }
+        .checkbox-item input[type="checkbox"] { 
+            width: auto; 
+            margin: 0; 
+        }
+        .checkbox-item label { 
+            margin: 0; 
+            font-size: 0.875rem; 
+        }
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; gap: 1rem; align-items: stretch; }
+            .reports-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .scheduled-item { flex-direction: column; gap: 1rem; align-items: stretch; }
+            .scheduled-actions { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">📊 ReservasPro</a>
+        <span style="color: #64748b;">Reportes</span>
+    </header>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>📊 Centro de Reportes</h1>
+            <button class="btn btn-success" onclick="createCustomReport()">➕ Crear Reporte Personalizado</button>
+        </div>
+        
+        <!-- Reportes Predefinidos -->
+        <div class="reports-grid">
+            <div class="report-card">
+                <h3>📈 Reporte de Ventas Diario</h3>
+                <p>Análisis completo de ingresos, reservas y tendencias del día actual con comparación con días anteriores.</p>
+                <div class="report-actions">
+                    <button class="report-btn" onclick="generateReport('daily-sales')">Generar</button>
+                    <button class="report-btn secondary" onclick="scheduleReport('daily-sales')">Programar</button>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>📅 Reporte Semanal</h3>
+                <p>Resumen semanal con métricas de rendimiento, servicios más populares y análisis de ocupación.</p>
+                <div class="report-actions">
+                    <button class="report-btn" onclick="generateReport('weekly')">Generar</button>
+                    <button class="report-btn secondary" onclick="scheduleReport('weekly')">Programar</button>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>💰 Reporte de Ingresos Mensual</h3>
+                <p>Análisis detallado de ingresos mensuales, comparación con meses anteriores y proyecciones.</p>
+                <div class="report-actions">
+                    <button class="report-btn" onclick="generateReport('monthly-revenue')">Generar</button>
+                    <button class="report-btn secondary" onclick="scheduleReport('monthly-revenue')">Programar</button>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>👥 Reporte de Clientes</h3>
+                <p>Análisis de clientes únicos, frecuencia de visitas, servicios preferidos y segmentación.</p>
+                <div class="report-actions">
+                    <button class="report-btn" onclick="generateReport('clients')">Generar</button>
+                    <button class="report-btn secondary" onclick="scheduleReport('clients')">Programar</button>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>⏰ Reporte de Horarios</h3>
+                <p>Análisis de ocupación por horarios, días más productivos y oportunidades de optimización.</p>
+                <div class="report-actions">
+                    <button class="report-btn" onclick="generateReport('schedules')">Generar</button>
+                    <button class="report-btn secondary" onclick="scheduleReport('schedules')">Programar</button>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>📊 Reporte Ejecutivo</h3>
+                <p>Resumen ejecutivo completo con KPIs principales, tendencias y recomendaciones estratégicas.</p>
+                <div class="report-actions">
+                    <button class="report-btn" onclick="generateReport('executive')">Generar</button>
+                    <button class="report-btn secondary" onclick="scheduleReport('executive')">Programar</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reportes Programados -->
+        <div class="scheduled-reports">
+            <h3>⏰ Reportes Programados</h3>
+            <div id="scheduledReports">
+                <div class="scheduled-item">
+                    <div class="scheduled-info">
+                        <h4>Reporte Diario de Ventas</h4>
+                        <p>Envío diario a las 18:00 - Último envío: Hoy 18:00</p>
+                    </div>
+                    <div class="scheduled-actions">
+                        <span class="status-badge status-active">Activo</span>
+                        <button class="report-btn secondary" onclick="editSchedule('daily-sales')">Editar</button>
+                        <button class="report-btn" onclick="pauseSchedule('daily-sales')">Pausar</button>
+                    </div>
+                </div>
+                
+                <div class="scheduled-item">
+                    <div class="scheduled-info">
+                        <h4>Reporte Semanal</h4>
+                        <p>Envío semanal los lunes a las 09:00 - Próximo envío: Lunes 09:00</p>
+                    </div>
+                    <div class="scheduled-actions">
+                        <span class="status-badge status-active">Activo</span>
+                        <button class="report-btn secondary" onclick="editSchedule('weekly')">Editar</button>
+                        <button class="report-btn" onclick="pauseSchedule('weekly')">Pausar</button>
+                    </div>
+                </div>
+                
+                <div class="scheduled-item">
+                    <div class="scheduled-info">
+                        <h4>Reporte Mensual</h4>
+                        <p>Envío mensual el día 1 a las 10:00 - Error en último envío</p>
+                    </div>
+                    <div class="scheduled-actions">
+                        <span class="status-badge status-error">Error</span>
+                        <button class="report-btn secondary" onclick="editSchedule('monthly')">Editar</button>
+                        <button class="report-btn success" onclick="retrySchedule('monthly')">Reintentar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Crear Reporte Personalizado -->
+        <div class="custom-report" id="customReportForm" style="display: none;">
+            <h3>➕ Crear Reporte Personalizado</h3>
+            <form id="reportForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reportName">Nombre del Reporte</label>
+                        <input type="text" id="reportName" placeholder="Ej: Reporte de Fin de Semana" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportType">Tipo de Reporte</label>
+                        <select id="reportType" required>
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateRange">Período</label>
+                        <select id="dateRange" required>
+                            <option value="today">Hoy</option>
+                            <option value="yesterday">Ayer</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month">Este mes</option>
+                            <option value="quarter">Este trimestre</option>
+                            <option value="year">Este año</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="frequency">Frecuencia de Envío</label>
+                        <select id="frequency">
+                            <option value="once">Una sola vez</option>
+                            <option value="daily">Diario</option>
+                            <option value="weekly">Semanal</option>
+                            <option value="monthly">Mensual</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Métricas a Incluir</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="metric-bookings" checked>
+                            <label for="metric-bookings">Reservas</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="metric-revenue" checked>
+                            <label for="metric-revenue">Ingresos</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="metric-clients" checked>
+                            <label for="metric-clients">Clientes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="metric-services">
+                            <label for="metric-services">Servicios</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="metric-schedules">
+                            <label for="metric-schedules">Horarios</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="metric-satisfaction">
+                            <label for="metric-satisfaction">Satisfacción</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="emailRecipients">Destinatarios (emails separados por comas)</label>
+                    <input type="text" id="emailRecipients" placeholder="admin@negocio.com, gerente@negocio.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="reportNotes">Notas Adicionales</label>
+                    <textarea id="reportNotes" rows="3" placeholder="Comentarios o instrucciones especiales..."></textarea>
+                </div>
+                
+                <div class="report-actions">
+                    <button type="submit" class="report-btn success">Crear Reporte</button>
+                    <button type="button" class="report-btn secondary" onclick="cancelCustomReport()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function generateReport(type) {
+            showNotification(`Generando reporte ${type}...`, 'info');
+            
+            // Simular generación de reporte
+            setTimeout(() => {
+                const reportData = generateMockReportData(type);
+                downloadReport(reportData, type);
+                showNotification('Reporte generado correctamente', 'success');
+            }, 2000);
+        }
+        
+        function scheduleReport(type) {
+            showNotification(`Programando reporte ${type}...`, 'info');
+            // Aquí se abriría un modal para configurar la programación
+        }
+        
+        function generateMockReportData(type) {
+            const reports = {
+                'daily-sales': {
+                    title: 'Reporte de Ventas Diario',
+                    date: new Date().toLocaleDateString('es-ES'),
+                    data: {
+                        totalBookings: 15,
+                        totalRevenue: 375,
+                        avgTicket: 25,
+                        topService: 'Corte',
+                        conversionRate: 72
+                    }
+                },
+                'weekly': {
+                    title: 'Reporte Semanal',
+                    date: new Date().toLocaleDateString('es-ES'),
+                    data: {
+                        totalBookings: 89,
+                        totalRevenue: 2235,
+                        avgTicket: 25.1,
+                        topService: 'Corte',
+                        conversionRate: 68
+                    }
+                },
+                'monthly-revenue': {
+                    title: 'Reporte de Ingresos Mensual',
+                    date: new Date().toLocaleDateString('es-ES'),
+                    data: {
+                        totalBookings: 342,
+                        totalRevenue: 8560,
+                        avgTicket: 25.0,
+                        topService: 'Corte',
+                        conversionRate: 71
+                    }
+                }
+            };
+            
+            return reports[type] || reports['daily-sales'];
+        }
+        
+        function downloadReport(data, type) {
+            const reportContent = `
+REPORTE: ${data.title}
+Fecha: ${data.date}
+
+RESUMEN:
+- Total de Reservas: ${data.data.totalBookings}
+- Ingresos Totales: €${data.data.totalRevenue}
+- Ticket Promedio: €${data.data.avgTicket}
+- Servicio Más Popular: ${data.data.topService}
+- Tasa de Conversión: ${data.data.conversionRate}%
+
+Generado por ReservasPro
+            `;
+            
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `reporte_${type}_${new Date().toISOString().split('T')[0]}.txt`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function createCustomReport() {
+            document.getElementById('customReportForm').style.display = 'block';
+            document.getElementById('customReportForm').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function cancelCustomReport() {
+            document.getElementById('customReportForm').style.display = 'none';
+            document.getElementById('reportForm').reset();
+        }
+        
+        function editSchedule(scheduleId) {
+            showNotification(`Editando programación de ${scheduleId}...`, 'info');
+        }
+        
+        function pauseSchedule(scheduleId) {
+            showNotification(`Pausando programación de ${scheduleId}...`, 'info');
+        }
+        
+        function retrySchedule(scheduleId) {
+            showNotification(`Reintentando envío de ${scheduleId}...`, 'info');
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#dc2626' : '#1e40af'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Manejar envío del formulario
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const reportData = {
+                name: document.getElementById('reportName').value,
+                type: document.getElementById('reportType').value,
+                dateRange: document.getElementById('dateRange').value,
+                frequency: document.getElementById('frequency').value,
+                metrics: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.id),
+                recipients: document.getElementById('emailRecipients').value,
+                notes: document.getElementById('reportNotes').value
+            };
+            
+            showNotification('Creando reporte personalizado...', 'info');
+            
+            setTimeout(() => {
+                showNotification('Reporte personalizado creado correctamente', 'success');
+                cancelCustomReport();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

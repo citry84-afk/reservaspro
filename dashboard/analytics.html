@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Avanzados - ReservasPro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f8fafc; }
+        .header { 
+            background: white; 
+            padding: 1rem; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .container { max-width: 1400px; margin: 2rem auto; padding: 0 1rem; }
+        .logo { font-size: 1.25rem; font-weight: bold; color: #1e40af; text-decoration: none; }
+        .btn { 
+            padding: 0.75rem 1.5rem; 
+            border: none; 
+            border-radius: 8px; 
+            background: #1e40af; 
+            color: white; 
+            text-decoration: none; 
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover { background: #1e3a8a; }
+        .btn-secondary { background: #64748b; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 1.5rem; 
+            margin-bottom: 2rem; 
+        }
+        .stat-card { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+        }
+        .stat-title { color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .stat-value { 
+            font-size: 2.5rem; 
+            font-weight: bold; 
+            color: #1e40af; 
+            margin-bottom: 0.5rem;
+        }
+        .stat-change { 
+            font-size: 0.875rem; 
+            color: #059669; 
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .stat-change.negative { color: #dc2626; }
+        .stat-change.neutral { color: #6b7280; }
+        .charts-grid { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 2rem; 
+            margin-bottom: 2rem; 
+        }
+        .chart-card { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        }
+        .chart-card h3 { color: #374151; margin-bottom: 1.5rem; font-size: 1.25rem; }
+        .chart-container { 
+            height: 300px; 
+            position: relative; 
+            background: #f9fafb; 
+            border-radius: 8px; 
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chart-placeholder {
+            text-align: center;
+            color: #6b7280;
+        }
+        .chart-placeholder h4 { margin-bottom: 1rem; color: #374151; }
+        .chart-bars {
+            display: flex;
+            align-items: end;
+            gap: 0.5rem;
+            height: 200px;
+            width: 100%;
+        }
+        .chart-bar {
+            background: linear-gradient(180deg, #1e40af 0%, #3b82f6 100%);
+            border-radius: 4px 4px 0 0;
+            min-width: 30px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .chart-bar:hover {
+            background: linear-gradient(180deg, #1d4ed8 0%, #2563eb 100%);
+            transform: scaleY(1.05);
+        }
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        .recent-activity { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            margin-bottom: 2rem;
+        }
+        .activity-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 1rem 0; 
+            border-bottom: 1px solid #f3f4f6; 
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-right: 1rem; 
+            font-size: 1.2rem;
+        }
+        .activity-content { flex: 1; }
+        .activity-title { font-weight: 600; color: #374151; margin-bottom: 0.25rem; }
+        .activity-time { color: #6b7280; font-size: 0.875rem; }
+        .activity-value { 
+            font-weight: 600; 
+            color: #059669; 
+            font-size: 1.1rem;
+        }
+        .activity-value.negative { color: #dc2626; }
+        .filters { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            margin-bottom: 2rem;
+        }
+        .filters h3 { color: #374151; margin-bottom: 1rem; }
+        .filter-group { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 1rem; 
+        }
+        .filter-item { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.5rem; 
+        }
+        .filter-item label { 
+            color: #374151; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+        }
+        .filter-item select, .filter-item input { 
+            padding: 0.75rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            font-size: 0.875rem;
+        }
+        .filter-item select:focus, .filter-item input:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+        .export-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .export-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        .export-btn.secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+        .export-btn.secondary:hover {
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+        }
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .insight-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #1e40af;
+        }
+        .insight-card.warning { border-left-color: #f59e0b; }
+        .insight-card.success { border-left-color: #10b981; }
+        .insight-card.error { border-left-color: #dc2626; }
+        .insight-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .insight-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        .insight-action {
+            margin-top: 1rem;
+        }
+        .insight-btn {
+            background: #1e40af;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .insight-btn:hover {
+            background: #1d4ed8;
+        }
+        @media (max-width: 768px) {
+            .charts-grid { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; gap: 1rem; align-items: stretch; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .filter-group { grid-template-columns: 1fr; }
+            .export-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">📊 ReservasPro Analytics</a>
+        <span style="color: #64748b;">Análisis Avanzado</span>
+    </header>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>📊 Analytics Avanzados</h1>
+            <div>
+                <button class="btn btn-secondary" onclick="refreshData()">🔄 Actualizar</button>
+                <button class="btn btn-success" onclick="exportReport()">📊 Exportar Reporte</button>
+            </div>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="filters">
+            <h3>🔍 Filtros de Análisis</h3>
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label for="dateRange">Período</label>
+                    <select id="dateRange" onchange="updateFilters()">
+                        <option value="7">Últimos 7 días</option>
+                        <option value="30" selected>Últimos 30 días</option>
+                        <option value="90">Últimos 90 días</option>
+                        <option value="365">Último año</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="serviceFilter">Servicio</label>
+                    <select id="serviceFilter" onchange="updateFilters()">
+                        <option value="all">Todos los servicios</option>
+                        <option value="corte">Corte</option>
+                        <option value="tinte">Tinte</option>
+                        <option value="mechas">Mechas</option>
+                        <option value="tratamiento">Tratamiento</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="statusFilter">Estado</label>
+                    <select id="statusFilter" onchange="updateFilters()">
+                        <option value="all">Todos los estados</option>
+                        <option value="confirmed">Confirmadas</option>
+                        <option value="pending">Pendientes</option>
+                        <option value="cancelled">Canceladas</option>
+                    </select>
+                </div>
+                <div class="filter-item" id="customDateRange" style="display: none;">
+                    <label for="startDate">Fecha Inicio</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="filter-item" id="customDateEnd" style="display: none;">
+                    <label for="endDate">Fecha Fin</label>
+                    <input type="date" id="endDate">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estadísticas Principales -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Reservas Totales</div>
+                <div class="stat-value" id="totalBookings">127</div>
+                <div class="stat-change" id="bookingsChange">
+                    <span>↗️</span>
+                    <span>+12% vs período anterior</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Ingresos Totales</div>
+                <div class="stat-value" id="totalRevenue">€3,245</div>
+                <div class="stat-change" id="revenueChange">
+                    <span>↗️</span>
+                    <span>+18% vs período anterior</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Tasa de Conversión</div>
+                <div class="stat-value" id="conversionRate">68%</div>
+                <div class="stat-change" id="conversionChange">
+                    <span>↗️</span>
+                    <span>+5% vs período anterior</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Clientes Únicos</div>
+                <div class="stat-value" id="uniqueClients">89</div>
+                <div class="stat-change" id="clientsChange">
+                    <span>↗️</span>
+                    <span>+8% vs período anterior</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Tiempo Promedio</div>
+                <div class="stat-value" id="avgDuration">45min</div>
+                <div class="stat-change" id="durationChange">
+                    <span>↘️</span>
+                    <span>-3min vs período anterior</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Satisfacción</div>
+                <div class="stat-value" id="satisfaction">4.8★</div>
+                <div class="stat-change" id="satisfactionChange">
+                    <span>↗️</span>
+                    <span>+0.2 vs período anterior</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráficos Principales -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>�� Reservas por Día</h3>
+                <div class="chart-container">
+                    <div class="chart-bars" id="bookingsChart">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>💰 Ingresos por Servicio</h3>
+                <div class="chart-container">
+                    <div class="chart-bars" id="revenueChart">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Insights Inteligentes -->
+        <div class="insights-grid">
+            <div class="insight-card success">
+                <div class="insight-title">🎯 Pico de Reservas Identificado</div>
+                <div class="insight-description">
+                    Los viernes entre 14:00-16:00 son tu horario más productivo. 
+                    Considera aumentar la capacidad en este período.
+                </div>
+                <div class="insight-action">
+                    <button class="insight-btn" onclick="optimizeSchedule()">Optimizar Horarios</button>
+                </div>
+            </div>
+            <div class="insight-card warning">
+                <div class="insight-title">⚠️ Servicio Menos Popular</div>
+                <div class="insight-description">
+                    "Tratamiento" tiene solo 3 reservas este mes. 
+                    Considera promocionarlo o ajustar el precio.
+                </div>
+                <div class="insight-action">
+                    <button class="insight-btn" onclick="promoteService()">Crear Promoción</button>
+                </div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-title">📊 Oportunidad de Crecimiento</div>
+                <div class="insight-description">
+                    Los lunes y martes tienen baja ocupación. 
+                    Perfecto para ofertas especiales o nuevos servicios.
+                </div>
+                <div class="insight-action">
+                    <button class="insight-btn" onclick="createOffer()">Crear Oferta</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actividad Reciente -->
+        <div class="recent-activity">
+            <h3>🕒 Actividad Reciente</h3>
+            <div id="recentActivity">
+                <!-- Generado dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Exportación -->
+        <div class="export-section">
+            <h3>📤 Exportar Datos</h3>
+            <div class="export-buttons">
+                <button class="export-btn" onclick="exportData('pdf')">📄 Exportar PDF</button>
+                <button class="export-btn" onclick="exportData('excel')">📊 Exportar Excel</button>
+                <button class="export-btn secondary" onclick="exportData('csv')">📋 Exportar CSV</button>
+                <button class="export-btn secondary" onclick="exportData('json')">🔧 Exportar JSON</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentData = {};
+        let filters = {
+            dateRange: 30,
+            service: 'all',
+            status: 'all',
+            startDate: null,
+            endDate: null
+        };
+        
+        function updateFilters() {
+            filters.dateRange = document.getElementById('dateRange').value;
+            filters.service = document.getElementById('serviceFilter').value;
+            filters.status = document.getElementById('statusFilter').value;
+            
+            if (filters.dateRange === 'custom') {
+                document.getElementById('customDateRange').style.display = 'block';
+                document.getElementById('customDateEnd').style.display = 'block';
+                filters.startDate = document.getElementById('startDate').value;
+                filters.endDate = document.getElementById('endDate').value;
+            } else {
+                document.getElementById('customDateRange').style.display = 'none';
+                document.getElementById('customDateEnd').style.display = 'none';
+            }
+            
+            loadAnalyticsData();
+        }
+        
+        function loadAnalyticsData() {
+            // Simular carga de datos
+            currentData = generateMockData();
+            updateStats();
+            updateCharts();
+            updateRecentActivity();
+        }
+        
+        function generateMockData() {
+            const data = {
+                totalBookings: 127,
+                totalRevenue: 3245,
+                conversionRate: 68,
+                uniqueClients: 89,
+                avgDuration: 45,
+                satisfaction: 4.8,
+                bookingsByDay: [
+                    { day: 'Lun', bookings: 15, revenue: 375 },
+                    { day: 'Mar', bookings: 18, revenue: 450 },
+                    { day: 'Mié', bookings: 22, revenue: 550 },
+                    { day: 'Jue', bookings: 25, revenue: 625 },
+                    { day: 'Vie', bookings: 28, revenue: 700 },
+                    { day: 'Sáb', bookings: 19, revenue: 475 },
+                    { day: 'Dom', bookings: 0, revenue: 0 }
+                ],
+                revenueByService: [
+                    { service: 'Corte', revenue: 1200, bookings: 48 },
+                    { service: 'Tinte', revenue: 900, bookings: 20 },
+                    { service: 'Mechas', revenue: 650, bookings: 10 },
+                    { service: 'Tratamiento', revenue: 300, bookings: 8 },
+                    { service: 'Otros', revenue: 195, bookings: 13 }
+                ],
+                recentActivity: [
+                    { type: 'booking', title: 'Nueva reserva - Ana García', time: 'Hace 5 min', value: '€25', icon: '📅' },
+                    { type: 'cancellation', title: 'Cancelación - María José', time: 'Hace 15 min', value: '-€45', icon: '❌' },
+                    { type: 'payment', title: 'Pago recibido - Carlos López', time: 'Hace 30 min', value: '€65', icon: '💳' },
+                    { type: 'review', title: 'Nueva reseña 5★', time: 'Hace 1 hora', value: 'Excelente', icon: '⭐' },
+                    { type: 'booking', title: 'Reserva confirmada - Laura Ruiz', time: 'Hace 2 horas', value: '€30', icon: '✅' }
+                ]
+            };
+            
+            return data;
+        }
+        
+        function updateStats() {
+            document.getElementById('totalBookings').textContent = currentData.totalBookings;
+            document.getElementById('totalRevenue').textContent = `€${currentData.totalRevenue.toLocaleString()}`;
+            document.getElementById('conversionRate').textContent = `${currentData.conversionRate}%`;
+            document.getElementById('uniqueClients').textContent = currentData.uniqueClients;
+            document.getElementById('avgDuration').textContent = `${currentData.avgDuration}min`;
+            document.getElementById('satisfaction').textContent = `${currentData.satisfaction}★`;
+        }
+        
+        function updateCharts() {
+            updateBookingsChart();
+            updateRevenueChart();
+        }
+        
+        function updateBookingsChart() {
+            const chart = document.getElementById('bookingsChart');
+            chart.innerHTML = '';
+            
+            const maxBookings = Math.max(...currentData.bookingsByDay.map(d => d.bookings));
+            
+            currentData.bookingsByDay.forEach(day => {
+                const height = (day.bookings / maxBookings) * 180;
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${height}px`;
+                
+                bar.innerHTML = `
+                    <div class="chart-bar-value">${day.bookings}</div>
+                    <div class="chart-bar-label">${day.day}</div>
+                `;
+                
+                chart.appendChild(bar);
+            });
+        }
+        
+        function updateRevenueChart() {
+            const chart = document.getElementById('revenueChart');
+            chart.innerHTML = '';
+            
+            const maxRevenue = Math.max(...currentData.revenueByService.map(d => d.revenue));
+            
+            currentData.revenueByService.forEach(service => {
+                const height = (service.revenue / maxRevenue) * 180;
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${height}px`;
+                
+                bar.innerHTML = `
+                    <div class="chart-bar-value">€${service.revenue}</div>
+                    <div class="chart-bar-label">${service.service}</div>
+                `;
+                
+                chart.appendChild(bar);
+            });
+        }
+        
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            container.innerHTML = '';
+            
+            currentData.recentActivity.forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                
+                const iconClass = activity.type === 'cancellation' ? 'negative' : '';
+                
+                item.innerHTML = `
+                    <div class="activity-icon" style="background: ${getActivityColor(activity.type)}">
+                        ${activity.icon}
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                    <div class="activity-value ${iconClass}">${activity.value}</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+        
+        function getActivityColor(type) {
+            const colors = {
+                booking: 'linear-gradient(135deg, #10b981, #059669)',
+                cancellation: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                payment: 'linear-gradient(135deg, #1e40af, #1d4ed8)',
+                review: 'linear-gradient(135deg, #f59e0b, #d97706)'
+            };
+            return colors[type] || 'linear-gradient(135deg, #6b7280, #4b5563)';
+        }
+        
+        function refreshData() {
+            loadAnalyticsData();
+            showNotification('Datos actualizados correctamente', 'success');
+        }
+        
+        function exportReport() {
+            showNotification('Generando reporte...', 'info');
+            setTimeout(() => {
+                showNotification('Reporte exportado correctamente', 'success');
+            }, 2000);
+        }
+        
+        function exportData(format) {
+            const data = {
+                filters: filters,
+                data: currentData,
+                exportDate: new Date().toISOString(),
+                format: format
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `analytics_export_${new Date().toISOString().split('T')[0]}.${format}`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification(`Datos exportados como ${format.toUpperCase()}`, 'success');
+        }
+        
+        function optimizeSchedule() {
+            showNotification('Abriendo optimizador de horarios...', 'info');
+        }
+        
+        function promoteService() {
+            showNotification('Creando promoción para Tratamiento...', 'info');
+        }
+        
+        function createOffer() {
+            showNotification('Creando oferta para lunes y martes...', 'info');
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#dc2626' : '#1e40af'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnalyticsData();
+        });
+    </script>
+</body>
+</html>
