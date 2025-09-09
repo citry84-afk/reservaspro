@@ -6,40 +6,193 @@
     <title>Widget QR - ReservasPro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui; background: #f8fafc; }
-        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
-        .header h1 { color: #1e40af; margin-bottom: 0.5rem; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        body { font-family: system-ui; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 1rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1); text-align: center; }
+        .header h1 { color: #1e40af; margin-bottom: 0.5rem; font-size: 2rem; }
+        .header p { color: #6b7280; font-size: 1.1rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .card h3 { color: #374151; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; }
-        .btn { background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-right: 0.5rem; margin-bottom: 0.5rem; }
-        .btn:hover { background: #059669; }
-        .btn-secondary { background: #6b7280; }
-        .btn-secondary:hover { background: #4b5563; }
-        .widget-preview { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; padding: 2rem; margin-top: 1rem; text-align: center; }
-        .widget-code { background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 8px; margin-top: 1rem; font-family: monospace; font-size: 0.875rem; overflow-x: auto; }
-        .copy-btn { background: #1e40af; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin-top: 0.5rem; }
-        .copy-btn:hover { background: #1d4ed8; }
-        .widget-styles { background: #fef3c7; border: 1px solid #f59e0b; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
-        .widget-styles h4 { color: #92400e; margin-bottom: 0.5rem; }
-        .size-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .size-option { border: 2px solid #e5e7eb; border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .size-option:hover { border-color: #1e40af; }
-        .size-option.selected { border-color: #1e40af; background: #eff6ff; }
-        .size-option h4 { color: #374151; margin-bottom: 0.5rem; }
-        .size-option p { color: #6b7280; font-size: 0.875rem; }
-        .live-preview { background: white; border: 2px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
-        .live-preview h4 { color: #374151; margin-bottom: 1rem; }
-        .qr-widget { display: inline-block; text-align: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; }
-        .qr-widget h3 { color: #1e40af; margin-bottom: 0.5rem; }
-        .qr-widget p { color: #6b7280; margin-bottom: 1rem; font-size: 0.875rem; }
-        .qr-widget .qr-code { margin: 0.5rem 0; }
-        .qr-widget .btn { background: #1e40af; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-size: 0.875rem; }
-        .qr-widget .btn:hover { background: #1d4ed8; }
+        .card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .card h3 { color: #374151; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600; font-size: 1rem; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 1rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+        .btn { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+            color: white; 
+            border: none; 
+            padding: 1rem 2rem; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            margin-right: 0.5rem; 
+            margin-bottom: 0.5rem; 
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        .btn-secondary { 
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); 
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+        .btn-secondary:hover { 
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+        }
+        .widget-preview { 
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); 
+            border: 2px dashed #d1d5db; 
+            border-radius: 16px; 
+            padding: 2rem; 
+            margin-top: 1rem; 
+            text-align: center; 
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .widget-code { 
+            background: #1f2937; 
+            color: #f9fafb; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            margin-top: 1rem; 
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; 
+            font-size: 0.875rem; 
+            overflow-x: auto; 
+            border: 2px solid #374151;
+        }
+        .copy-btn { 
+            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%); 
+            color: white; 
+            border: none; 
+            padding: 0.75rem 1.5rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 0.5rem; 
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+        }
+        .copy-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
+        }
+        .widget-styles { 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); 
+            border: 2px solid #f59e0b; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            margin-top: 1rem; 
+        }
+        .widget-styles h4 { color: #92400e; margin-bottom: 1rem; font-size: 1.2rem; }
+        .size-options { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 1rem; 
+            margin-top: 1rem; 
+        }
+        .size-option { 
+            border: 3px solid #e5e7eb; 
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            background: white;
+        }
+        .size-option:hover { 
+            border-color: #1e40af; 
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .size-option.selected { 
+            border-color: #1e40af; 
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); 
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.2);
+        }
+        .size-option h4 { color: #374151; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .size-option p { color: #6b7280; font-size: 0.9rem; }
+        .live-preview { 
+            background: white; 
+            border: 2px solid #e5e7eb; 
+            border-radius: 16px; 
+            padding: 2rem; 
+            margin-top: 1rem; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .live-preview h4 { color: #374151; margin-bottom: 1rem; font-size: 1.2rem; }
+        .qr-widget { 
+            display: inline-block; 
+            text-align: center; 
+            padding: 2rem; 
+            border: 3px solid #e5e7eb; 
+            border-radius: 16px; 
+            background: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .qr-widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .qr-widget h3 { color: #1e40af; margin-bottom: 1rem; font-size: 1.5rem; }
+        .qr-widget p { color: #6b7280; margin-bottom: 1.5rem; font-size: 1rem; }
+        .qr-widget .qr-code { margin: 1rem 0; }
+        .qr-widget .btn { 
+            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%); 
+            color: white; 
+            border: none; 
+            padding: 0.75rem 1.5rem; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            font-size: 1rem; 
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+        }
+        .qr-widget .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
+        }
+        .error-message {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+        .success-message {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            color: #16a34a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .container { padding: 1rem; }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
@@ -78,7 +231,7 @@
                             <p>200x300px</p>
                         </div>
                         <div class="size-option" onclick="selectSize('medium')" data-size="medium">
-                            <h4>💻 Mediano</h4>
+                            <h4>�� Mediano</h4>
                             <p>300x400px</p>
                         </div>
                         <div class="size-option" onclick="selectSize('large')" data-size="large">
@@ -91,15 +244,18 @@
                 <div class="form-group">
                     <label for="widgetStyle">Estilo del Widget</label>
                     <select id="widgetStyle">
-                        <option value="minimal">Minimalista</option>
-                        <option value="elegant">Elegante</option>
-                        <option value="colorful">Colorido</option>
-                        <option value="modern">Moderno</option>
+                        <option value="premium">💎 Premium</option>
+                        <option value="modern">🚀 Moderno</option>
+                        <option value="colorful">🌈 Colorido</option>
+                        <option value="minimal">✨ Minimalista</option>
                     </select>
                 </div>
                 
                 <button class="btn" onclick="generateWidget()">🎯 Generar Widget</button>
                 <button class="btn btn-secondary" onclick="loadBusinessData()">📥 Cargar Datos</button>
+                
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+                <div id="successMessage" class="success-message" style="display: none;"></div>
             </div>
             
             <!-- Vista Previa y Código -->
@@ -140,6 +296,24 @@
         let currentWidget = null;
         let selectedSize = 'small';
         
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+        
         function selectSize(size) {
             selectedSize = size;
             document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
@@ -153,9 +327,17 @@
             const widgetStyle = document.getElementById('widgetStyle').value;
             
             if (!businessName || !bookingUrl) {
-                alert('Por favor completa el nombre del negocio y la URL');
+                showError('Por favor completa el nombre del negocio y la URL');
                 return;
             }
+            
+            if (!isValidUrl(bookingUrl)) {
+                showError('Por favor introduce una URL válida');
+                return;
+            }
+            
+            // Mostrar loading
+            document.getElementById('widgetPreview').innerHTML = '<p>🔄 Generando widget...</p>';
             
             // Generar QR
             QRCode.toString(bookingUrl, {
@@ -168,7 +350,8 @@
             }, function (err, qrSvg) {
                 if (err) {
                     console.error('Error generando QR:', err);
-                    alert('Error generando el código QR');
+                    showError('Error generando el código QR');
+                    document.getElementById('widgetPreview').innerHTML = '<p>Error generando widget</p>';
                     return;
                 }
                 
@@ -212,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('widgetCode').style.display = 'block';
                 
                 currentWidget = { html: widgetHTML, css: widgetCSS, code: codeContent };
+                showSuccess('¡Widget generado correctamente!');
             });
         }
         
@@ -233,48 +417,60 @@ document.addEventListener('DOMContentLoaded', function() {
 .reservaspro-widget {
     display: inline-block;
     text-align: center;
-    padding: 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
+    padding: 2rem;
+    border: 3px solid #e5e7eb;
+    border-radius: 16px;
     background: white;
     font-family: system-ui, -apple-system, sans-serif;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+}
+
+.reservaspro-widget:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
 }
 
 .reservaspro-widget h3 {
     color: #1e40af;
-    margin-bottom: 0.5rem;
-    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .reservaspro-widget p {
     color: #6b7280;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 .reservaspro-widget .qr-code {
-    margin: 0.5rem 0;
+    margin: 1rem 0;
 }
 
 .reservaspro-widget .qr-code svg {
     max-width: 100%;
     height: auto;
+    border-radius: 8px;
 }
 
 .reservaspro-widget .qr-btn {
-    background: #1e40af;
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.875rem;
-    transition: background 0.3s;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
 }
 
 .reservaspro-widget .qr-btn:hover {
-    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
 }
 
 /* Tamaños */
@@ -283,34 +479,22 @@ document.addEventListener('DOMContentLoaded', function() {
 .widget-large { max-width: 400px; }
 
 /* Estilos */
-.style-minimal {
-    border: 1px solid #d1d5db;
-    box-shadow: none;
-}
-
-.style-elegant {
-    border: 2px solid #1e40af;
+.style-premium {
     background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 3px solid #1e40af;
+    box-shadow: 0 15px 35px rgba(30, 64, 175, 0.2);
 }
 
-.style-colorful {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-}
-
-.style-colorful h3 {
-    color: white;
-}
-
-.style-colorful p {
-    color: rgba(255,255,255,0.9);
+.style-premium h3 {
+    color: #1e40af;
+    text-shadow: 0 2px 4px rgba(30, 64, 175, 0.1);
 }
 
 .style-modern {
     background: #1f2937;
     color: white;
-    border: 2px solid #374151;
+    border: 3px solid #10b981;
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.2);
 }
 
 .style-modern h3 {
@@ -322,11 +506,63 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .style-modern .qr-btn {
-    background: #10b981;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
 .style-modern .qr-btn:hover {
-    background: #059669;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.style-colorful {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 3px solid #ffffff;
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+}
+
+.style-colorful h3 {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.style-colorful p {
+    color: rgba(255,255,255,0.9);
+}
+
+.style-colorful .qr-btn {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: #667eea;
+    box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+}
+
+.style-colorful .qr-btn:hover {
+    box-shadow: 0 8px 25px rgba(255,255,255,0.4);
+}
+
+.style-minimal {
+    background: white;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.style-minimal h3 {
+    color: #374151;
+    font-weight: 600;
+}
+
+.style-minimal p {
+    color: #6b7280;
+    font-style: italic;
+}
+
+.style-minimal .qr-btn {
+    background: #374151;
+    box-shadow: 0 4px 15px rgba(55, 65, 81, 0.3);
+}
+
+.style-minimal .qr-btn:hover {
+    box-shadow: 0 8px 25px rgba(55, 65, 81, 0.4);
 }`;
             
             return baseCSS;
@@ -341,10 +577,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
         function copyCode() {
             const codeContent = document.getElementById('codeContent').textContent;
             navigator.clipboard.writeText(codeContent).then(() => {
-                alert('¡Código copiado al portapapeles!');
+                showSuccess('¡Código copiado al portapapeles!');
             }).catch(err => {
                 console.error('Error copiando código:', err);
                 // Fallback para navegadores que no soportan clipboard API
@@ -354,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-                alert('¡Código copiado al portapapeles!');
+                showSuccess('¡Código copiado al portapapeles!');
             });
         }
         
@@ -365,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('businessName').value = businessName;
             document.getElementById('bookingUrl').value = businessUrl;
             
-            generateWidget();
+            showSuccess('Datos del negocio cargados');
         }
         
         // Cargar datos al iniciar
