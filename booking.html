@@ -134,13 +134,13 @@
         
         // Configuración por defecto
         const defaultSchedule = {
-            'Lunes': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'Martes': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'Miércoles': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'Jueves': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'Viernes': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'Sábado': { active: true, openTime: '09:00', closeTime: '15:00' },
-            'Domingo': { active: false, openTime: '00:00', closeTime: '00:00' }
+            'lunes': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'martes': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'miércoles': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'jueves': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'viernes': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'sábado': { active: true, openTime: '09:00', closeTime: '15:00' },
+            'domingo': { active: false, openTime: '00:00', closeTime: '00:00' }
         };
         
         const defaultServices = [
@@ -200,7 +200,7 @@
                 
                 // Obtener número de día de la semana (0=domingo, 1=lunes, etc.)
                 const dayOfWeek = date.getDay();
-                const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
                 const dayName = dayNames[dayOfWeek];
                 
                 debugLog('Día ' + i + ': ' + dayName + ' (getDay=' + dayOfWeek + ')');
@@ -230,7 +230,7 @@
             
             selectedDate = date;
             const dayOfWeek = date.getDay();
-            const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
             const dayName = dayNames[dayOfWeek];
             
             debugLog('Fecha seleccionada: ' + date.toLocaleDateString('es-ES') + ' (' + dayName + ')');
@@ -246,7 +246,7 @@
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             
             const dayOfWeek = selectedDate.getDay();
-            const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
             const dayName = dayNames[dayOfWeek];
             
             debugLog('Generando horarios para: ' + dayName);
@@ -260,8 +260,8 @@
                 return;
             }
             
-            const openTime = daySchedule.openTime;
-            const closeTime = daySchedule.closeTime;
+            const openTime = daySchedule.openTime || daySchedule.open;
+            const closeTime = daySchedule.closeTime || daySchedule.close;
             const serviceDuration = selectedService.duration;
             
             debugLog(`Horario: ${openTime} - ${closeTime}, Servicio: ${serviceDuration}min`);
