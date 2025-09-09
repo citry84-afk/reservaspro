@@ -158,6 +158,16 @@
             margin: 1rem 0;
             font-weight: 600;
         }
+        .debug-info {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        .debug-info h4 { color: #92400e; margin-bottom: 0.5rem; }
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
             .container { padding: 1rem; }
@@ -212,6 +222,12 @@
                 
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
                 <div id="successMessage" class="success-message" style="display: none;"></div>
+                
+                <!-- Debug Info -->
+                <div class="debug-info">
+                    <h4>🐛 Debug Info</h4>
+                    <div id="debugText">Iniciando sistema...</div>
+                </div>
             </div>
             
             <!-- Vista Previa -->
@@ -273,6 +289,12 @@
         let currentQR = null;
         let selectedTemplate = 'premium';
         
+        function debugLog(message) {
+            console.log('🐛 QR DEBUG:', message);
+            const debugText = document.getElementById('debugText');
+            debugText.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+        
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
@@ -292,11 +314,15 @@
         }
         
         function generateQR() {
+            debugLog('Iniciando generación de QR...');
+            
             const businessName = document.getElementById('businessName').value;
             const bookingUrl = document.getElementById('bookingUrl').value;
             const qrMessage = document.getElementById('qrMessage').value;
             const qrSize = parseInt(document.getElementById('qrSize').value);
             const qrColor = document.getElementById('qrColor').value;
+            
+            debugLog('Datos: ' + JSON.stringify({ businessName, bookingUrl, qrMessage, qrSize, qrColor }));
             
             if (!businessName || !bookingUrl) {
                 showError('Por favor completa el nombre del negocio y la URL');
@@ -313,47 +339,69 @@
             
             // Mostrar loading
             qrDisplay.innerHTML = '<p>🔄 Generando QR...</p>';
+            debugLog('Mostrando loading...');
+            
+            // Verificar si QRCode está disponible
+            if (typeof QRCode === 'undefined') {
+                debugLog('ERROR: QRCode library no está cargada');
+                showError('Error: Librería QRCode no está disponible. Recarga la página.');
+                qrDisplay.innerHTML = '<p>Error: Librería no disponible</p>';
+                return;
+            }
+            
+            debugLog('QRCode library disponible, generando...');
             
             // Generar QR
-            QRCode.toCanvas(document.createElement('canvas'), bookingUrl, {
-                width: qrSize,
-                height: qrSize,
-                color: {
-                    dark: qrColor,
-                    light: '#FFFFFF'
-                },
-                margin: 2
-            }, function (error, canvas) {
-                if (error) {
-                    console.error('Error generando QR:', error);
-                    showError('Error generando el código QR. Inténtalo de nuevo.');
-                    qrDisplay.innerHTML = '<p>Error generando QR</p>';
-                    return;
-                }
-                
-                currentQR = canvas;
-                qrDisplay.innerHTML = `
-                    <h4 style="color: #1e40af; margin-bottom: 1rem;">${businessName}</h4>
-                    <div class="qr-code">${canvas.outerHTML}</div>
-                    <p style="color: #6b7280; margin-top: 1rem;">${qrMessage}</p>
-                `;
-                
-                // Mostrar información
-                document.getElementById('infoUrl').textContent = bookingUrl;
-                document.getElementById('infoSize').textContent = qrSize + 'px';
-                document.getElementById('infoColor').textContent = qrColor;
-                qrInfo.style.display = 'block';
-                
-                // Mostrar botones de descarga
-                document.getElementById('downloadPng').style.display = 'inline-block';
-                document.getElementById('downloadSvg').style.display = 'inline-block';
-                document.getElementById('downloadCard').style.display = 'inline-block';
-                
-                // Actualizar vista previa de tarjeta
-                updateBusinessCardPreview();
-                
-                showSuccess('¡QR generado correctamente!');
-            });
+            try {
+                QRCode.toCanvas(document.createElement('canvas'), bookingUrl, {
+                    width: qrSize,
+                    height: qrSize,
+                    color: {
+                        dark: qrColor,
+                        light: '#FFFFFF'
+                    },
+                    margin: 2
+                }, function (error, canvas) {
+                    debugLog('Callback ejecutado. Error: ' + (error ? error.message : 'null'));
+                    
+                    if (error) {
+                        console.error('Error generando QR:', error);
+                        showError('Error generando el código QR: ' + error.message);
+                        qrDisplay.innerHTML = '<p>Error generando QR: ' + error.message + '</p>';
+                        return;
+                    }
+                    
+                    debugLog('QR generado exitosamente');
+                    
+                    currentQR = canvas;
+                    qrDisplay.innerHTML = `
+                        <h4 style="color: #1e40af; margin-bottom: 1rem;">${businessName}</h4>
+                        <div class="qr-code">${canvas.outerHTML}</div>
+                        <p style="color: #6b7280; margin-top: 1rem;">${qrMessage}</p>
+                    `;
+                    
+                    // Mostrar información
+                    document.getElementById('infoUrl').textContent = bookingUrl;
+                    document.getElementById('infoSize').textContent = qrSize + 'px';
+                    document.getElementById('infoColor').textContent = qrColor;
+                    qrInfo.style.display = 'block';
+                    
+                    // Mostrar botones de descarga
+                    document.getElementById('downloadPng').style.display = 'inline-block';
+                    document.getElementById('downloadSvg').style.display = 'inline-block';
+                    document.getElementById('downloadCard').style.display = 'inline-block';
+                    
+                    // Actualizar vista previa de tarjeta
+                    updateBusinessCardPreview();
+                    
+                    showSuccess('¡QR generado correctamente!');
+                    debugLog('Proceso completado exitosamente');
+                });
+            } catch (err) {
+                debugLog('ERROR en try/catch: ' + err.message);
+                showError('Error inesperado: ' + err.message);
+                qrDisplay.innerHTML = '<p>Error inesperado: ' + err.message + '</p>';
+            }
         }
         
         function isValidUrl(string) {
@@ -669,6 +717,8 @@
         
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Página cargada');
+            debugLog('QRCode disponible: ' + (typeof QRCode !== 'undefined'));
             loadBusinessData();
         });
     </script>
