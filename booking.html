@@ -41,6 +41,8 @@
         .summary h4 { color: #0c4a6e; margin-bottom: 0.5rem; }
         .summary-item { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
         .hidden { display: none; }
+        .debug { background: #fef3c7; border: 1px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 8px; font-family: monospace; font-size: 0.875rem; }
+        .debug h4 { margin-bottom: 0.5rem; color: #92400e; }
     </style>
 </head>
 <body>
@@ -50,6 +52,12 @@
     </div>
     
     <div class="container">
+        <!-- Debug Info -->
+        <div class="debug">
+            <h4>🐛 Debug Info</h4>
+            <div id="debugText">Iniciando sistema...</div>
+        </div>
+        
         <!-- Paso 1: Seleccionar Servicio -->
         <div class="step" id="step1">
             <h3><span class="step-number">1</span> Selecciona tu servicio</h3>
@@ -118,7 +126,13 @@
         let selectedDate = null;
         let selectedTime = null;
         
-        // Configuración por defecto - SIMPLIFICADA
+        function debugLog(message) {
+            console.log('🐛 BOOKING DEBUG:', message);
+            const debugText = document.getElementById('debugText');
+            debugText.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+        
+        // Configuración por defecto
         const defaultSchedule = {
             'Lunes': { active: true, openTime: '09:00', closeTime: '18:00' },
             'Martes': { active: true, openTime: '09:00', closeTime: '18:00' },
@@ -140,6 +154,7 @@
         // Cargar servicios del negocio
         function loadServices() {
             const services = JSON.parse(localStorage.getItem('businessServices') || JSON.stringify(defaultServices));
+            debugLog('Servicios cargados: ' + services.length);
             
             const grid = document.getElementById('servicesGrid');
             grid.innerHTML = '';
@@ -164,6 +179,7 @@
             element.classList.add('selected');
             
             selectedService = service;
+            debugLog('Servicio seleccionado: ' + service.name + ' (' + service.duration + 'min)');
             showStep(2);
             generateCalendar();
         }
@@ -174,6 +190,8 @@
             
             const today = new Date();
             const schedule = JSON.parse(localStorage.getItem('businessSchedule') || JSON.stringify(defaultSchedule));
+            debugLog('Horarios cargados: ' + Object.keys(schedule).length + ' días');
+            debugLog('Horarios: ' + JSON.stringify(schedule));
             
             // Generar próximos 14 días
             for (let i = 0; i < 14; i++) {
@@ -185,7 +203,10 @@
                 const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
                 const dayName = dayNames[dayOfWeek];
                 
+                debugLog('Día ' + i + ': ' + dayName + ' (getDay=' + dayOfWeek + ')');
+                
                 const isWorkingDay = schedule[dayName]?.active !== false;
+                debugLog('Día ' + dayName + ' activo: ' + isWorkingDay + ' (config: ' + JSON.stringify(schedule[dayName]) + ')');
                 
                 const dayDiv = document.createElement('div');
                 dayDiv.className = `calendar-day ${!isWorkingDay ? 'disabled' : ''}`;
@@ -208,6 +229,11 @@
             element.classList.add('selected');
             
             selectedDate = date;
+            const dayOfWeek = date.getDay();
+            const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const dayName = dayNames[dayOfWeek];
+            
+            debugLog('Fecha seleccionada: ' + date.toLocaleDateString('es-ES') + ' (' + dayName + ')');
             showStep(3);
             generateTimeSlots();
         }
@@ -219,14 +245,17 @@
             const schedule = JSON.parse(localStorage.getItem('businessSchedule') || JSON.stringify(defaultSchedule));
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             
-            // Obtener número de día de la semana (0=domingo, 1=lunes, etc.)
             const dayOfWeek = selectedDate.getDay();
             const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             const dayName = dayNames[dayOfWeek];
             
+            debugLog('Generando horarios para: ' + dayName);
+            
             const daySchedule = schedule[dayName];
+            debugLog('Configuración del día: ' + JSON.stringify(daySchedule));
             
             if (!daySchedule || !daySchedule.active) {
+                debugLog('Día no activo - mostrando mensaje');
                 grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444;">Este día no está disponible</p>';
                 return;
             }
@@ -234,6 +263,8 @@
             const openTime = daySchedule.openTime;
             const closeTime = daySchedule.closeTime;
             const serviceDuration = selectedService.duration;
+            
+            debugLog(`Horario: ${openTime} - ${closeTime}, Servicio: ${serviceDuration}min`);
             
             // Generar slots cada 30 minutos
             const slots = [];
@@ -247,6 +278,9 @@
                 }
                 currentTime = addMinutes(currentTime, 30);
             }
+            
+            debugLog('Slots generados: ' + slots.length);
+            debugLog('Slots: ' + JSON.stringify(slots));
             
             if (slots.length === 0) {
                 grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444;">No hay horarios disponibles para este día</p>';
@@ -271,6 +305,7 @@
             element.classList.add('selected');
             
             selectedTime = time;
+            debugLog('Hora seleccionada: ' + time);
             updateSummary();
             showStep(4);
         }
@@ -312,6 +347,8 @@
             appointments.push(booking);
             localStorage.setItem('appointments', JSON.stringify(appointments));
             
+            debugLog('Reserva guardada: ' + booking.id);
+            
             alert(`✅ ¡Reserva realizada con éxito!
 
 📋 Detalles:
@@ -352,6 +389,7 @@
         }
         
         document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Iniciando sistema de reservas...');
             loadServices();
         });
     </script>
