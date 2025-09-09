@@ -41,6 +41,7 @@
         .summary h4 { color: #0c4a6e; margin-bottom: 0.5rem; }
         .summary-item { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
         .hidden { display: none; }
+        .debug { background: #fef3c7; border: 1px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -50,6 +51,12 @@
     </div>
     
     <div class="container">
+        <!-- Debug Info -->
+        <div class="debug" id="debugInfo" style="display: none;">
+            <h4>🐛 Debug Info</h4>
+            <div id="debugText"></div>
+        </div>
+        
         <!-- Paso 1: Seleccionar Servicio -->
         <div class="step" id="step1">
             <h3><span class="step-number">1</span> Selecciona tu servicio</h3>
@@ -118,15 +125,37 @@
         let selectedDate = null;
         let selectedTime = null;
         
+        // Configuración por defecto
+        const defaultSchedule = {
+            'Lunes': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'Martes': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'Miércoles': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'Jueves': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'Viernes': { active: true, openTime: '09:00', closeTime: '18:00' },
+            'Sábado': { active: true, openTime: '09:00', closeTime: '15:00' },
+            'Domingo': { active: false, openTime: '00:00', closeTime: '00:00' }
+        };
+        
+        const defaultServices = [
+            { name: 'Corte', duration: 30, price: 15 },
+            { name: 'Tinte', duration: 90, price: 45 },
+            { name: 'Mechas', duration: 120, price: 65 },
+            { name: 'Lavado + Peinado', duration: 45, price: 20 },
+            { name: 'Tratamiento', duration: 60, price: 35 }
+        ];
+        
+        function debugLog(message) {
+            console.log('🐛 BOOKING DEBUG:', message);
+            const debugInfo = document.getElementById('debugInfo');
+            const debugText = document.getElementById('debugText');
+            debugInfo.style.display = 'block';
+            debugText.innerHTML += '<div>' + message + '</div>';
+        }
+        
         // Cargar servicios del negocio
         function loadServices() {
-            const services = JSON.parse(localStorage.getItem('businessServices') || JSON.stringify([
-                { name: 'Corte', duration: 30, price: 15 },
-                { name: 'Tinte', duration: 90, price: 45 },
-                { name: 'Mechas', duration: 120, price: 65 },
-                { name: 'Lavado + Peinado', duration: 45, price: 20 },
-                { name: 'Tratamiento', duration: 60, price: 35 }
-            ]));
+            const services = JSON.parse(localStorage.getItem('businessServices') || JSON.stringify(defaultServices));
+            debugLog('Servicios cargados: ' + services.length);
             
             const grid = document.getElementById('servicesGrid');
             grid.innerHTML = '';
@@ -152,6 +181,7 @@
             element.classList.add('selected');
             
             selectedService = service;
+            debugLog('Servicio seleccionado: ' + service.name);
             showStep(2);
             generateCalendar();
         }
@@ -161,7 +191,8 @@
             grid.innerHTML = '';
             
             const today = new Date();
-            const schedule = JSON.parse(localStorage.getItem('businessSchedule') || '{}');
+            const schedule = JSON.parse(localStorage.getItem('businessSchedule') || JSON.stringify(defaultSchedule));
+            debugLog('Horarios cargados: ' + Object.keys(schedule).length + ' días');
             
             // Generar próximos 14 días
             for (let i = 0; i < 14; i++) {
@@ -193,6 +224,7 @@
             element.classList.add('selected');
             
             selectedDate = date;
+            debugLog('Fecha seleccionada: ' + date.toLocaleDateString('es-ES'));
             showStep(3);
             generateTimeSlots();
         }
@@ -201,18 +233,27 @@
             const grid = document.getElementById('timesGrid');
             grid.innerHTML = '';
             
-            const schedule = JSON.parse(localStorage.getItem('businessSchedule') || '{}');
+            const schedule = JSON.parse(localStorage.getItem('businessSchedule') || JSON.stringify(defaultSchedule));
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             
             const dayName = selectedDate.toLocaleDateString('es-ES', { weekday: 'long' });
             const dayNameKey = dayName.charAt(0).toUpperCase() + dayName.slice(1);
             const daySchedule = schedule[dayNameKey];
             
-            if (!daySchedule || !daySchedule.active) return;
+            debugLog('Generando horarios para: ' + dayNameKey);
+            debugLog('Configuración del día: ' + JSON.stringify(daySchedule));
+            
+            if (!daySchedule || !daySchedule.active) {
+                debugLog('Día no activo');
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444;">Este día no está disponible</p>';
+                return;
+            }
             
             const openTime = daySchedule.openTime;
             const closeTime = daySchedule.closeTime;
             const serviceDuration = selectedService.duration;
+            
+            debugLog(`Horario: ${openTime} - ${closeTime}, Servicio: ${serviceDuration}min`);
             
             // Generar slots cada 30 minutos
             const slots = [];
@@ -225,6 +266,13 @@
                     slots.push({ time: currentTime, available: isAvailable });
                 }
                 currentTime = addMinutes(currentTime, 30);
+            }
+            
+            debugLog('Slots generados: ' + slots.length);
+            
+            if (slots.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444;">No hay horarios disponibles para este día</p>';
+                return;
             }
             
             slots.forEach(slot => {
@@ -245,6 +293,7 @@
             element.classList.add('selected');
             
             selectedTime = time;
+            debugLog('Hora seleccionada: ' + time);
             updateSummary();
             showStep(4);
         }
@@ -287,10 +336,7 @@
             appointments.push(booking);
             localStorage.setItem('appointments', JSON.stringify(appointments));
             
-            // Enviar notificación de confirmación
-            if (window.notificationManager) {
-                window.notificationManager.sendBookingConfirmation(booking);
-            }
+            debugLog('Reserva guardada: ' + booking.id);
             
             // Mostrar confirmación
             alert(`✅ ¡Reserva realizada con éxito!
@@ -339,6 +385,7 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Iniciando sistema de reservas...');
             loadServices();
         });
     </script>
