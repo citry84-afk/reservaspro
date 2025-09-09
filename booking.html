@@ -201,6 +201,17 @@
                 
                 const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
                 const dayNameKey = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+            // Mapear nombres de días
+            const dayMapping = {
+                'Monday': 'Lunes',
+                'Tuesday': 'Martes',
+                'Wednesday': 'Miércoles',
+                'Thursday': 'Jueves',
+                'Friday': 'Viernes',
+                'Saturday': 'Sábado',
+                'Sunday': 'Domingo'
+            };
+            const mappedDayName = dayMapping[dayName] || dayNameKey;
                 const isWorkingDay = schedule[dayNameKey]?.active !== false;
                 
                 const dayDiv = document.createElement('div');
@@ -238,7 +249,18 @@
             
             const dayName = selectedDate.toLocaleDateString('es-ES', { weekday: 'long' });
             const dayNameKey = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-            const daySchedule = schedule[dayNameKey];
+            // Mapear nombres de días
+            const dayMapping = {
+                'Monday': 'Lunes',
+                'Tuesday': 'Martes',
+                'Wednesday': 'Miércoles',
+                'Thursday': 'Jueves',
+                'Friday': 'Viernes',
+                'Saturday': 'Sábado',
+                'Sunday': 'Domingo'
+            };
+            const mappedDayName = dayMapping[dayName] || dayNameKey;
+            const daySchedule = schedule[mappedDayName];
             
             debugLog('Generando horarios para: ' + dayNameKey);
             debugLog('Configuración del día: ' + JSON.stringify(daySchedule));
