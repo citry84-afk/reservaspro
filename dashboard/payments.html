@@ -443,7 +443,7 @@
             <div class="payment-methods">
                 <div class="payment-card">
                     <h3>💳 Stripe</h3>
-                    <div class="payment-status status-active">
+                    status-pending
                         <span>✅</span>
                         <span>Activo</span>
                     </div>
@@ -495,7 +495,7 @@
                             <li>Calendario básico</li>
                             <li>Notificaciones SMS</li>
                         </ul>
-                        <button class="pricing-btn" onclick="selectPlan('basic')">Seleccionar</button>
+                        Solicitar por email</button>
                     </div>
                     
                     <div class="pricing-card featured">
@@ -510,7 +510,7 @@
                             <li>Integración de pagos</li>
                             <li>WhatsApp Business</li>
                         </ul>
-                        <button class="pricing-btn featured" onclick="selectPlan('professional')">Seleccionar</button>
+                        Solicitar por email</button>
                     </div>
                     
                     <div class="pricing-card">
@@ -525,14 +525,14 @@
                             <li>Integración personalizada</li>
                             <li>Gerente de cuenta</li>
                         </ul>
-                        <button class="pricing-btn" onclick="selectPlan('enterprise')">Seleccionar</button>
+                        Solicitar por email</button>
                     </div>
                 </div>
             </div>
             
             <!-- Formulario de Pago -->
             <div class="payment-form">
-                <h3>💳 Procesar Pago</h3>
+                <h3>💳 Pre-registro de Pago</h3>
                 <form id="paymentForm">
                     <div class="form-row">
                         <div class="form-group">
@@ -597,7 +597,7 @@
                     </div>
                     
                     <div class="payment-actions">
-                        <button type="submit" class="btn-payment stripe">💳 Procesar Pago</button>
+                        <button type="submit" class="btn-payment stripe">💳 Pre-registro de Pago</button>
                         <button type="button" class="btn-payment secondary" onclick="clearForm()">🔄 Limpiar</button>
                     </div>
                 </form>
@@ -606,7 +606,7 @@
             <!-- Transacciones Recientes -->
             <div class="transactions-section">
                 <div class="transactions-header">
-                    <h3 class="transactions-title">📊 Transacciones Recientes</h3>
+                    <h3 class="transactions-title">🚧 Pagos (Próximamente)</h3>
                     <div class="transaction-filters">
                         <button class="filter-btn active" onclick="filterTransactions('all')">Todas</button>
                         <button class="filter-btn" onclick="filterTransactions('stripe')">Stripe</button>
