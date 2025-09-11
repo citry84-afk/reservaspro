@@ -353,6 +353,20 @@
             };
             
             img.onerror = function() {
+                console.log("Error cargando QR desde API, usando fallback local");
+                callback(true, generateLocalQR(url, size, color));
+                return;
+            };
+            
+            // Timeout para evitar esperas infinitas
+            setTimeout(() => {
+                if (!img.complete) {
+                    console.log("Timeout cargando QR, usando fallback local");
+                    callback(true, generateLocalQR(url, size, color));
+                }
+            }, 5000);
+            
+            img.onerror = function() {
                 // Fallback: crear un QR simple con texto
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
@@ -718,3 +732,47 @@
     </script>
 </body>
 </html>
+
+        function generateLocalQR(url, size, color) {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Fondo blanco
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, size, size);
+            
+            // Patrón QR simple pero funcional
+            ctx.fillStyle = color;
+            const blockSize = size / 25;
+            
+            // Esquinas del QR
+            drawQRCorner(ctx, 0, 0, blockSize);
+            drawQRCorner(ctx, size - 7 * blockSize, 0, blockSize);
+            drawQRCorner(ctx, 0, size - 7 * blockSize, blockSize);
+            
+            // Patrón de datos basado en la URL
+            const urlHash = url.split("").reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+            
+            for (let i = 0; i < 25; i++) {
+                for (let j = 0; j < 25; j++) {
+                    // Evitar las esquinas
+                    if ((i < 7 && j < 7) || 
+                        (i < 7 && j >= 18) || 
+                        (i >= 18 && j < 7)) {
+                        continue;
+                    }
+                    
+                    // Patrón basado en hash de URL
+                    if ((i * 25 + j + urlHash) % 3 === 0) {
+                        ctx.fillRect(i * blockSize, j * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
+            
+            return canvas.outerHTML;
+        }

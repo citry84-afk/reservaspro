@@ -193,14 +193,7 @@
             debugLog('Horarios cargados: ' + Object.keys(schedule).length + ' días');
             debugLog('Horarios: ' + JSON.stringify(schedule));
             
-            // Obtener configuración de meses de agenda
-            const agendaSettings = JSON.parse(localStorage.getItem("agendaSettings") || "{}");
-            const monthsAhead = agendaSettings.months || 3;
-            const daysAhead = monthsAhead * 30; // Aproximadamente 30 días por mes
-
-            debugLog("Meses de agenda configurados: " + monthsAhead + " (" + daysAhead + " días)");
-
-            // Generar días según configuración
+            // Generar próximos 14 días
             for (let i = 0; i < daysAhead; i++) {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);

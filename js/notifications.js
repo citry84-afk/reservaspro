@@ -281,3 +281,71 @@ document.head.appendChild(style);
 
 // Inicializar automáticamente
 window.notificationManager = new NotificationManager();
+    // Notificaciones Push gratuitas (PWA)
+    sendPushNotification(message, appointment) {
+        if ("Notification" in window && "serviceWorker" in navigator) {
+            if (Notification.permission === "granted") {
+                new Notification(`ReservasPro - ${appointment.client}`, {
+                    body: message,
+                    icon: "/assets/icons/icon-192x192.png",
+                    badge: "/assets/icons/icon-72x72.png",
+                    tag: `appointment-${appointment.id}`,
+                    requireInteraction: true
+                });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        this.sendPushNotification(message, appointment);
+                    }
+                });
+            }
+        }
+        console.log("📱 Push notification sent:", message);
+    }
+
+    // Notificaciones in-app gratuitas
+    sendInAppNotification(message, appointment) {
+        // Crear notificación en la interfaz
+        const notification = document.createElement("div");
+        notification.className = "in-app-notification";
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            max-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        notification.innerHTML = `
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">📱 Notificación</div>
+            <div style="font-size: 0.9rem;">${message}</div>
+            <button onclick="this.parentElement.remove()" style="
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.2rem;
+                cursor: pointer;
+            ">×</button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove después de 5 segundos
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+        
+        console.log("💬 In-app notification sent:", message);
+    }
+}

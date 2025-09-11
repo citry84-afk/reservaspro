@@ -282,3 +282,61 @@
     </script>
 </body>
 </html>
+
+    // Función para volver atrás
+    function goBack() {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = "../index.html";
+        }
+    }
+    
+    // Funcionalidad de swipe para navegación
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener("touchstart", function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener("touchend", function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // Swipe izquierda - ir atrás
+                goBack();
+            } else {
+                // Swipe derecha - mostrar indicador
+                showSwipeIndicator();
+            }
+        }
+    }
+    
+    function showSwipeIndicator() {
+        const indicator = document.createElement("div");
+        indicator.className = "swipe-indicator";
+        indicator.textContent = "👈 Desliza hacia la izquierda para volver atrás";
+        document.body.appendChild(indicator);
+        
+        setTimeout(() => {
+            if (indicator.parentElement) {
+                indicator.remove();
+            }
+        }, 3000);
+    }
+    
+    // Atajos de teclado
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            goBack();
+        }
+    });
+
