@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - ReservasPro</title>
     <link rel="stylesheet" href="/css/mobile-optimization.css">
-    <script src="/js/multilanguage.js"></script>
     <script src="/js/common-header.js" defer></script>
     <script src="/js/onboarding.js" defer></script>
     <script src="/js/mini-tour.js" defer></script>
@@ -137,8 +136,6 @@
     </style>
 </head>
 <body>
-    
-    
     <div class="container">
         <div class="page-header">
             <h1 data-translate="nav.dashboard">Dashboard</h1>
@@ -150,22 +147,22 @@
         
         <div class="stats">
             <div class="stat-card">
-            <div class="stat-title" data-translate="analytics.total_bookings">Reservas Totales</div>
+                <div class="stat-title" data-translate="analytics.total_bookings">Reservas Totales</div>
                 <div class="stat-value" id="todayBookings">8</div>
                 <div class="stat-change">+2 vs ayer</div>
             </div>
             <div class="stat-card">
-            <div class="stat-title" data-translate="analytics.total_revenue">Ingresos Totales</div>
+                <div class="stat-title" data-translate="analytics.total_revenue">Ingresos Totales</div>
                 <div class="stat-value sensitive-data" id="weeklyRevenue">€1,245</div>
                 <div class="stat-change">+15% vs anterior</div>
             </div>
             <div class="stat-card">
-            <div class="stat-title" data-translate="analytics.unique_clients">Clientes Únicos</div>
+                <div class="stat-title" data-translate="analytics.unique_clients">Clientes Únicos</div>
                 <div class="stat-value sensitive-data" id="newClients">12</div>
                 <div class="stat-change">+3 esta semana</div>
             </div>
             <div class="stat-card">
-            <div class="stat-title">Ocupación</div>
+                <div class="stat-title">Ocupación</div>
                 <div class="stat-value">78%</div>
                 <div class="stat-change" style="color: #dc2626;">-5% vs anterior</div>
             </div>
@@ -199,19 +196,13 @@
                     <span style="font-size: 2rem;">⚙️</span>
                     <span>Configuración</span>
                 </a>
-                 <a href="public-booking.html" class="action-btn">
-
+                <a href="public-booking.html" class="action-btn">
                     <span style="font-size: 2rem;">🌐</span>
-
                     <span>Reservas Públicas</span>
-
                 </a>
-                 <a href="pwa-notifications.html" class="action-btn">
-
+                <a href="pwa-notifications.html" class="action-btn">
                     <span style="font-size: 2rem;">📱</span>
-
                     <span>App & Notificaciones</span>
-
                 </a>
             </div>
         </div>
@@ -282,12 +273,32 @@
             localStorage.setItem('privacyLevel', privacyLevel);
         }
         
+        function applyUiMode() {
+            const mode = document.getElementById('uiMode').value;
+            localStorage.setItem('uiMode', mode);
+            document.querySelectorAll('.advanced-only').forEach(el => {
+                el.style.display = (mode === 'advanced') ? '' : 'none';
+            });
+        }
+        
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = "../index.html";
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             const savedPrivacy = localStorage.getItem('privacyLevel');
             if (savedPrivacy) {
                 privacyLevel = parseInt(savedPrivacy) - 1; // Will be incremented in togglePrivacy
                 togglePrivacy();
             }
+            
+            const saved = localStorage.getItem('uiMode') || 'simple';
+            document.getElementById('uiMode').value = saved;
+            applyUiMode();
             
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             const today = new Date().toISOString().split('T')[0];
@@ -299,77 +310,7 @@
             document.getElementById('weeklyRevenue').textContent = `€${revenue * 7}`;
         });
     </script>
-    <script>
-        function applyUiMode() {
-            const mode = document.getElementById('uiMode').value;
-            localStorage.setItem('uiMode', mode);
-            document.querySelectorAll('.advanced-only').forEach(el => {
-                el.style.display = (mode === 'advanced') ? '' : 'none';
-            });
-        }
-        document.addEventListener('DOMContentLoaded', function() {
-            const saved = localStorage.getItem('uiMode') || 'simple';
-            document.getElementById('uiMode').value = saved;
-            applyUiMode();
-        });
-    </script>
+    
+    <script src="/js/multilanguage.js"></script>
 </body>
 </html>
-
-    // Función para volver atrás
-    function goBack() {
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            window.location.href = "../index.html";
-        }
-    }
-    
-    // Funcionalidad de swipe para navegación
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    document.addEventListener("touchstart", function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-    
-    document.addEventListener("touchend", function(e) {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
-    
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        const diff = touchStartX - touchEndX;
-        
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swipe izquierda - ir atrás
-                goBack();
-            } else {
-                // Swipe derecha - mostrar indicador
-                showSwipeIndicator();
-            }
-        }
-    }
-    
-    function showSwipeIndicator() {
-        const indicator = document.createElement("div");
-        indicator.className = "swipe-indicator";
-        indicator.textContent = "👈 Desliza hacia la izquierda para volver atrás";
-        document.body.appendChild(indicator);
-        
-        setTimeout(() => {
-            if (indicator.parentElement) {
-                indicator.remove();
-            }
-        }, 3000);
-    }
-    
-    // Atajos de teclado
-    document.addEventListener("keydown", function(e) {
-        if (e.key === "Escape") {
-            goBack();
-        }
-    });
-
