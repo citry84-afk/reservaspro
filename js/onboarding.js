@@ -155,6 +155,13 @@
         document.getElementById('saveStep2Btn').onclick = saveStep2;
         document.getElementById('backToStep2Btn').onclick = () => showStep(2);
         document.getElementById('saveStep3Btn').onclick = saveStep3;
+        
+        // Also add to window for debugging
+        window.closeOnboarding = closeOnboarding;
+        window.saveStep1 = saveStep1;
+        window.saveStep2 = saveStep2;
+        window.saveStep3 = saveStep3;
+        window.showStep = showStep;
     }
 
     function maybeAutoLaunch() {

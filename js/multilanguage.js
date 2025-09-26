@@ -747,12 +747,19 @@ class MultiLanguage {
 }
 
 // Inicializar sistema multi-idioma cuando el DOM esté listo
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+function initMultiLanguage() {
+    if (document.body) {
         window.multiLanguage = new MultiLanguage();
-    });
+    } else {
+        setTimeout(initMultiLanguage, 100);
+    }
+}
+
+// Iniciar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMultiLanguage);
 } else {
-    window.multiLanguage = new MultiLanguage();
+    initMultiLanguage();
 }
 
 // Función helper para traducir
