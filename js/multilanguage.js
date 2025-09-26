@@ -607,6 +607,13 @@ class MultiLanguage {
     }
     
     setupLanguageSelector() {
+        // Verificar que document.body existe
+        if (!document.body) {
+            console.warn('Document body not ready, retrying...');
+            setTimeout(() => this.setupLanguageSelector(), 100);
+            return;
+        }
+        
         // Crear selector de idioma si no existe
         if (!document.getElementById('languageSelector')) {
             const selector = document.createElement('select');
