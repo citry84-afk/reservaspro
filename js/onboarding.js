@@ -134,6 +134,9 @@ class OnboardingManager {
         ];
         localStorage.setItem('services', JSON.stringify(services));
         
+        // Also update the calendar service options
+        this.updateCalendarServices(services);
+        
         console.log('Step 1 saved:', services);
         this.showStep(2);
     }
@@ -153,6 +156,9 @@ class OnboardingManager {
             months: 3
         };
         localStorage.setItem('agendaSettings', JSON.stringify(agendaSettings));
+        
+        // Also update the calendar time slots
+        this.updateCalendarTimeSlots(agendaSettings);
         
         console.log('Step 2 saved:', agendaSettings);
         this.showStep(3);
@@ -205,6 +211,42 @@ class OnboardingManager {
     startOnboarding() {
         if (!this.isCompleted) {
             this.buildModal();
+        }
+    }
+
+    updateCalendarServices(services) {
+        // Update service options in calendar if it exists
+        const serviceSelect = document.getElementById('service');
+        if (serviceSelect) {
+            serviceSelect.innerHTML = '<option value="">Selecciona servicio</option>';
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.name.toLowerCase();
+                option.textContent = `${service.name} - €${service.price}`;
+                serviceSelect.appendChild(option);
+            });
+        }
+    }
+
+    updateCalendarTimeSlots(agendaSettings) {
+        // Update time slots in calendar if it exists
+        const timeSelect = document.getElementById('time');
+        if (timeSelect) {
+            timeSelect.innerHTML = '<option value="">Selecciona hora</option>';
+            
+            const startHour = parseInt(agendaSettings.openTime.split(':')[0]);
+            const endHour = parseInt(agendaSettings.closeTime.split(':')[0]);
+            const interval = agendaSettings.slotInterval;
+            
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minutes = 0; minutes < 60; minutes += interval) {
+                    const timeStr = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    const option = document.createElement('option');
+                    option.value = timeStr;
+                    option.textContent = timeStr;
+                    timeSelect.appendChild(option);
+                }
+            }
         }
     }
 }

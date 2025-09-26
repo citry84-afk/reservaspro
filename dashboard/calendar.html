@@ -104,6 +104,66 @@
     <script>
         let currentWeekStart = new Date();
         let appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+        let services = JSON.parse(localStorage.getItem('services') || '[]');
+        let agendaSettings = JSON.parse(localStorage.getItem('agendaSettings') || '{}');
+        
+        // Load configuration from onboarding
+        function loadConfiguration() {
+            // Load services
+            if (services.length === 0) {
+                services = [
+                    { id: 1, name: 'Corte', duration: 60, price: 25 },
+                    { id: 2, name: 'Tinte', duration: 90, price: 45 }
+                ];
+                localStorage.setItem('services', JSON.stringify(services));
+            }
+            
+            // Load agenda settings
+            if (!agendaSettings.openTime) {
+                agendaSettings = {
+                    openTime: '09:00',
+                    closeTime: '18:00',
+                    slotInterval: 30,
+                    workingDays: [1, 2, 3, 4, 5],
+                    months: 3
+                };
+                localStorage.setItem('agendaSettings', JSON.stringify(agendaSettings));
+            }
+            
+            // Update service options
+            updateServiceOptions();
+            updateTimeSlots();
+        }
+        
+        function updateServiceOptions() {
+            const serviceSelect = document.getElementById('service');
+            serviceSelect.innerHTML = '<option value="">Selecciona servicio</option>';
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.name.toLowerCase();
+                option.textContent = `${service.name} - €${service.price}`;
+                serviceSelect.appendChild(option);
+            });
+        }
+        
+        function updateTimeSlots() {
+            const timeSelect = document.getElementById('time');
+            timeSelect.innerHTML = '<option value="">Selecciona hora</option>';
+            
+            const startHour = parseInt(agendaSettings.openTime.split(':')[0]);
+            const endHour = parseInt(agendaSettings.closeTime.split(':')[0]);
+            const interval = agendaSettings.slotInterval;
+            
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minutes = 0; minutes < 60; minutes += interval) {
+                    const timeStr = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    const option = document.createElement('option');
+                    option.value = timeStr;
+                    option.textContent = timeStr;
+                    timeSelect.appendChild(option);
+                }
+            }
+        }
         
         // Sample data
         if (appointments.length === 0) {
@@ -123,29 +183,35 @@
             const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
             days.forEach(day => grid.appendChild(createCell(day, 'day-header')));
             
-            // Time slots
-            for (let hour = 9; hour <= 17; hour++) {
-                const timeStr = hour.toString().padStart(2, '0') + ':00';
-                grid.appendChild(createCell(timeStr, 'time-slot'));
-                
-                for (let day = 0; day < 7; day++) {
-                    const date = new Date(currentWeekStart);
-                    date.setDate(currentWeekStart.getDate() + day);
-                    const dateStr = date.toISOString().split('T')[0];
+            // Time slots based on configuration
+            const startHour = parseInt(agendaSettings.openTime.split(':')[0]);
+            const endHour = parseInt(agendaSettings.closeTime.split(':')[0]);
+            const interval = agendaSettings.slotInterval;
+            
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minutes = 0; minutes < 60; minutes += interval) {
+                    const timeStr = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    grid.appendChild(createCell(timeStr, 'time-slot'));
                     
-                    const cell = createCell('', 'calendar-cell');
-                    cell.onclick = () => quickAdd(dateStr, timeStr);
-                    
-                    // Check for appointments
-                    const apt = appointments.find(a => a.date === dateStr && a.time === timeStr);
-                    if (apt) {
-                        const aptDiv = document.createElement('div');
-                        aptDiv.className = `appointment ${apt.status}`;
-                        aptDiv.textContent = `${apt.service} - ${apt.client}`;
-                        cell.appendChild(aptDiv);
+                    for (let day = 0; day < 7; day++) {
+                        const date = new Date(currentWeekStart);
+                        date.setDate(currentWeekStart.getDate() + day);
+                        const dateStr = date.toISOString().split('T')[0];
+                        
+                        const cell = createCell('', 'calendar-cell');
+                        cell.onclick = () => quickAdd(dateStr, timeStr);
+                        
+                        // Check for appointments
+                        const apt = appointments.find(a => a.date === dateStr && a.time === timeStr);
+                        if (apt) {
+                            const aptDiv = document.createElement('div');
+                            aptDiv.className = `appointment ${apt.status}`;
+                            aptDiv.textContent = `${apt.service} - ${apt.client}`;
+                            cell.appendChild(aptDiv);
+                        }
+                        
+                        grid.appendChild(cell);
                     }
-                    
-                    grid.appendChild(cell);
                 }
             }
         }
@@ -213,6 +279,7 @@
         });
         
         // Initialize
+        loadConfiguration();
         setCurrentWeek();
         generateCalendar();
         
