@@ -778,6 +778,13 @@ if (document.readyState === 'loading') {
     waitForDOM();
 }
 
+// También intentar después de un delay adicional
+setTimeout(() => {
+    if (!window.multiLanguage) {
+        waitForDOM();
+    }
+}, 1000);
+
 // Función helper para traducir
 function t(key, params = {}) {
     return window.multiLanguage.translate(key, params);

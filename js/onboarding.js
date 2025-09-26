@@ -86,7 +86,7 @@
             <div style="background:white; border-radius:12px; width:90%; max-width:720px; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.15);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                     <h2 style="margin:0;">🚀 Configuración Inicial</h2>
-                    <button onclick="closeOnboarding()" style="border:none;background:none;font-size:1.25rem;cursor:pointer;">×</button>
+                    <button onclick="window.closeOnboarding()" style="border:none;background:none;font-size:1.25rem;cursor:pointer;">×</button>
                 </div>
                 <div id="rp-onb-step-1" class="rp-onb-step">
                     <h3>1) Servicios base</h3>
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:flex-end;">
-                        <button onclick="saveStep1()" class="rp-onb-next" style="background:#1e40af;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">Siguiente →</button>
+                        <button onclick="window.saveStep1()" class="rp-onb-next" style="background:#1e40af;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">Siguiente →</button>
                     </div>
                 </div>
                 <div id="rp-onb-step-2" class="rp-onb-step" style="display:none;">
@@ -125,8 +125,8 @@
                         </div>
                     </div>
                     <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:space-between;">
-                        <button onclick="showStep(1)" style="background:#64748b;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">← Atrás</button>
-                        <button onclick="saveStep2()" style="background:#1e40af;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">Siguiente →</button>
+                        <button onclick="window.showStep(1)" style="background:#64748b;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">← Atrás</button>
+                        <button onclick="window.saveStep2()" style="background:#1e40af;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">Siguiente →</button>
                     </div>
                 </div>
                 <div id="rp-onb-step-3" class="rp-onb-step" style="display:none;">
@@ -140,8 +140,8 @@
                         <textarea id="rp-onb-s3-t2" rows="2" style="width:100%; padding:0.6rem; border:1px solid #e5e7eb; border-radius:8px;">Tu cita es en 2 horas ({hora}). ¡Te esperamos!</textarea>
                     </div>
                     <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:space-between;">
-                        <button onclick="showStep(2)" style="background:#64748b;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">← Atrás</button>
-                        <button onclick="saveStep3()" style="background:#10b981;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">Finalizar ✓</button>
+                        <button onclick="window.showStep(2)" style="background:#64748b;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">← Atrás</button>
+                        <button onclick="window.saveStep3()" style="background:#10b981;color:white;border:none;padding:0.6rem 1rem;border-radius:8px;cursor:pointer;">Finalizar ✓</button>
                     </div>
                 </div>
             </div>
