@@ -771,8 +771,12 @@ function waitForDOM() {
     }
 }
 
-// Iniciar
-waitForDOM();
+// Iniciar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', waitForDOM);
+} else {
+    waitForDOM();
+}
 
 // Función helper para traducir
 function t(key, params = {}) {

@@ -164,18 +164,18 @@
         showStep(savedStep);
     }
 
-    // Public API
-    window.startOnboarding = function() {
-        buildModal();
-        showStep(1);
-    };
-    
-    // Expose functions globally for debugging
+    // Expose functions globally immediately
     window.showStep = showStep;
     window.saveStep1 = saveStep1;
     window.saveStep2 = saveStep2;
     window.saveStep3 = saveStep3;
     window.closeOnboarding = closeOnboarding;
+
+    // Public API
+    window.startOnboarding = function() {
+        buildModal();
+        showStep(1);
+    };
 
     // Auto
     document.addEventListener('DOMContentLoaded', maybeAutoLaunch);
