@@ -19,10 +19,10 @@ class NotificationManager {
         if (!this.settings.enabled) {
             this.settings = {
                 enabled: true,
-                reminder24h: 'all',
-                reminder2h: 'whatsapp',
-                bookingConfirmation: 'email',
-                cancellationNotice: 'whatsapp',
+                reminder24h: 'sms',
+                reminder2h: 'sms',
+                bookingConfirmation: 'sms',
+                cancellationNotice: 'sms',
                 templates: {
                     reminder24h: 'Hola {cliente}, te recordamos tu cita mañana a las {hora} para {servicio}. ¡Te esperamos en {negocio}!',
                     reminder2h: '🕐 Tu cita es en 2 horas ({hora}). ¡No olvides confirmar tu asistencia!',

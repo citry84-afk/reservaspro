@@ -43,7 +43,14 @@
                 <div id="currentWeek" style="font-weight: bold;">Semana Actual</div>
                 <button onclick="changeWeek(1)">›</button>
             </div>
-            <button class="btn" onclick="openModal()">➕ <span data-translate="btn.add">Agregar</span></button>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap: wrap;">
+                <select id="viewMode" onchange="changeView()" style="border:1px solid #e2e8f0; border-radius:8px; padding:0.5rem;">
+                    <option value="week" selected>Semanal</option>
+                    <option value="day">Diaria</option>
+                    <option value="month">Mensual</option>
+                </select>
+                <button class="btn" onclick="openModal()">➕ <span data-translate="btn.add">Agregar</span></button>
+            </div>
         </div>
         
         <div class="calendar-grid" id="calendarGrid">
@@ -213,6 +220,61 @@
         document.getElementById('modal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
+    </script>
+    <script>
+        function changeView() {
+            const mode = document.getElementById('viewMode').value;
+            if (mode === 'week') {
+                document.querySelector('.calendar-grid').style.gridTemplateColumns = '100px repeat(7, 1fr)';
+                generateCalendar();
+            } else if (mode === 'day') {
+                document.querySelector('.calendar-grid').style.gridTemplateColumns = '100px 1fr';
+                renderDayView();
+            } else if (mode === 'month') {
+                renderMonthView();
+            }
+        }
+
+        function renderDayView() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            grid.appendChild(createCell('', 'day-header'));
+            const today = new Date(currentWeekStart);
+            grid.appendChild(createCell(today.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit' }), 'day-header'));
+            for (let hour = 9; hour <= 17; hour++) {
+                const timeStr = hour.toString().padStart(2, '0') + ':00';
+                grid.appendChild(createCell(timeStr, 'time-slot'));
+                const cell = createCell('', 'calendar-cell');
+                const dateStr = today.toISOString().split('T')[0];
+                const apt = appointments.find(a => a.date === dateStr && a.time === timeStr);
+                if (apt) {
+                    const aptDiv = document.createElement('div');
+                    aptDiv.className = `appointment ${apt.status}`;
+                    aptDiv.textContent = `${apt.service} - ${apt.client}`;
+                    cell.appendChild(aptDiv);
+                }
+                cell.onclick = () => quickAdd(dateStr, timeStr);
+                grid.appendChild(cell);
+            }
+        }
+
+        function renderMonthView() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            // simple month grid: 7 columns x 6 rows
+            const days = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+            grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+            days.forEach(d => grid.appendChild(createCell(d, 'day-header')));
+            const firstDay = new Date(currentWeekStart);
+            firstDay.setDate(1);
+            const startOffset = (firstDay.getDay() + 6) % 7; // Monday-first
+            const daysInMonth = new Date(firstDay.getFullYear(), firstDay.getMonth() + 1, 0).getDate();
+            for (let i = 0; i < startOffset; i++) grid.appendChild(createCell('', 'calendar-cell'));
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = createCell(String(day), 'calendar-cell');
+                grid.appendChild(cell);
+            }
+        }
     </script>
 </body>
 </html>

@@ -304,6 +304,12 @@
                                     <option value="19:00">19:00</option>
                                     <option value="20:00">20:00</option>
                                 </select>
+                                <label>Intervalo de slots:</label>
+                                <select id="slotInterval" onchange="updateSlotInterval()">
+                                    <option value="15">15 min</option>
+                                    <option value="30" selected>30 min</option>
+                                    <option value="60">60 min</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -436,6 +442,7 @@
             customHours: false,
             defaultStartTime: '09:00',
             defaultEndTime: '18:00',
+            slotInterval: 30,
             mobileOptimized: true,
             touchFriendly: true,
             theme: 'glass',
@@ -463,6 +470,7 @@
             document.getElementById('enableCustomHours').checked = settings.customHours;
             document.getElementById('defaultStartTime').value = settings.defaultStartTime;
             document.getElementById('defaultEndTime').value = settings.defaultEndTime;
+            document.getElementById('slotInterval').value = String(settings.slotInterval);
             document.getElementById('mobileOptimized').checked = settings.mobileOptimized;
             document.getElementById('touchFriendly').checked = settings.touchFriendly;
             document.getElementById('theme').value = settings.theme;
@@ -500,6 +508,11 @@
         function updateTheme() {
             settings.theme = document.getElementById('theme').value;
             applyTheme();
+            updateStatus();
+        }
+
+        function updateSlotInterval() {
+            settings.slotInterval = parseInt(document.getElementById('slotInterval').value);
             updateStatus();
         }
         
@@ -649,6 +662,9 @@
             localStorage.setItem('monthsAhead', settings.monthsAhead);
             localStorage.setItem('theme', settings.theme);
             localStorage.setItem('mobileOptimized', settings.mobileOptimized);
+            // compat para booking
+            const existing = JSON.parse(localStorage.getItem('agendaSettings') || '{}');
+            localStorage.setItem('agendaSettings', JSON.stringify({ ...existing, slotInterval: settings.slotInterval }));
             
             showNotification('Configuración guardada correctamente', 'success');
         }

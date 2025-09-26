@@ -274,7 +274,10 @@
             
             debugLog(`Horario: ${openTime} - ${closeTime}, Servicio: ${serviceDuration}min`);
             
-            // Generar slots cada 30 minutos
+            // Obtener intervalo desde configuración (default 30)
+            const agendaSettings = JSON.parse(localStorage.getItem('agendaSettings') || '{}');
+            const intervalMinutes = parseInt(agendaSettings.slotInterval || 30);
+            // Generar slots por intervalo configurado
             const slots = [];
             let currentTime = openTime;
             
@@ -284,7 +287,7 @@
                     const isAvailable = checkAvailability(selectedDate, currentTime, serviceDuration, appointments);
                     slots.push({ time: currentTime, available: isAvailable });
                 }
-                currentTime = addMinutes(currentTime, 30);
+                currentTime = addMinutes(currentTime, intervalMinutes);
             }
             
             debugLog('Slots generados: ' + slots.length);

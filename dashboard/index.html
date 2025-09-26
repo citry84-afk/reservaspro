@@ -170,7 +170,16 @@
         </div>
         
         <div class="quick-actions">
-            <h3>Acciones Rápidas</h3>
+            <div style="display:flex; justify-content: space-between; align-items:center; gap:1rem; flex-wrap: wrap;">
+                <h3>Acciones Rápidas</h3>
+                <div>
+                    <label style="color:#64748b; font-weight:600; margin-right:0.5rem;">Modo:</label>
+                    <select id="uiMode" onchange="applyUiMode()" style="border:1px solid #e2e8f0; border-radius:8px; padding:0.4rem;">
+                        <option value="simple" selected>Simplificado</option>
+                        <option value="advanced">Avanzado</option>
+                    </select>
+                </div>
+            </div>
             <div class="actions">
                 <a href="calendar-enhanced.html" class="action-btn">
                     <span style="font-size: 2rem;">📅</span>
@@ -197,7 +206,7 @@
             </div>
         </div>
         
-        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-top: 2rem;">
+        <div class="advanced-only" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-top: 2rem;">
             <h3>Próximas Citas</h3>
             <div style="margin-top: 1rem;">
                 <div style="display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid #e2e8f0;">
@@ -278,6 +287,20 @@
             
             const revenue = todayAppts.length * 25;
             document.getElementById('weeklyRevenue').textContent = `€${revenue * 7}`;
+        });
+    </script>
+    <script>
+        function applyUiMode() {
+            const mode = document.getElementById('uiMode').value;
+            localStorage.setItem('uiMode', mode);
+            document.querySelectorAll('.advanced-only').forEach(el => {
+                el.style.display = (mode === 'advanced') ? '' : 'none';
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const saved = localStorage.getItem('uiMode') || 'simple';
+            document.getElementById('uiMode').value = saved;
+            applyUiMode();
         });
     </script>
 </body>
