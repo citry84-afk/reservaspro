@@ -581,8 +581,16 @@ class MultiLanguage {
     
     init() {
         this.loadLanguage();
-        this.setupLanguageSelector();
-        this.translatePage();
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.setupLanguageSelector();
+                this.translatePage();
+            });
+        } else {
+            this.setupLanguageSelector();
+            this.translatePage();
+        }
     }
     
     loadLanguage() {

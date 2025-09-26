@@ -72,6 +72,11 @@
     }
 
     function buildModal() {
+        if (!document.body) {
+            console.error('Document body not ready');
+            return;
+        }
+        
         const modal = document.createElement('div');
         modal.id = 'rp-onb-modal';
         modal.style.cssText = `
@@ -174,6 +179,13 @@
         buildModal();
         showStep(1);
     };
+    
+    // Expose functions globally for debugging
+    window.showStep = showStep;
+    window.saveStep1 = saveStep1;
+    window.saveStep2 = saveStep2;
+    window.saveStep3 = saveStep3;
+    window.closeOnboarding = closeOnboarding;
 
     // Auto
     document.addEventListener('DOMContentLoaded', maybeAutoLaunch);
