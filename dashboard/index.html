@@ -166,40 +166,19 @@
         </div>
         
         <div class="quick-actions">
-            <div style="display:flex; justify-content: space-between; align-items:center; gap:1rem; flex-wrap: wrap;">
-                <h3>Acciones Rápidas</h3>
-                <div>
-                    <label style="color:#64748b; font-weight:600; margin-right:0.5rem;">Modo:</label>
-                    <select id="uiMode" onchange="applyUiMode()" style="border:1px solid #e2e8f0; border-radius:8px; padding:0.4rem;">
-                        <option value="simple" selected>Simplificado</option>
-                        <option value="advanced">Avanzado</option>
-                    </select>
-                </div>
-            </div>
+            <h3 style="margin-bottom: 1.5rem;">¿Qué quieres hacer?</h3>
             <div class="actions">
-                <a href="#" class="action-btn" onclick="window.startOnboarding()">
-                    <span style="font-size: 2rem;">🚀</span>
-                    <span data-translate="btn.start_onboarding">Iniciar Onboarding</span>
-                </a>
-                <a href="#" class="action-btn" onclick="miniTour.start()">
-                    <span style="font-size: 2rem;">🎯</span>
-                    <span data-translate="btn.take_tour">Tomar Tour</span>
-                </a>
-                <a href="calendar.html" class="action-btn">
+                <a href="calendar.html" class="action-btn" style="background: #059669; color: white; text-decoration: none;">
                     <span style="font-size: 2rem;">📅</span>
-                    <span>Calendario</span>
+                    <span>Ver mi agenda</span>
                 </a>
-                <a href="agenda-settings.html" class="action-btn">
+                <a href="#" class="action-btn" onclick="window.startOnboarding()">
                     <span style="font-size: 2rem;">⚙️</span>
-                    <span>Configuración</span>
+                    <span>Configurar servicios</span>
                 </a>
                 <a href="public-booking.html" class="action-btn">
                     <span style="font-size: 2rem;">🌐</span>
-                    <span>Reservas Públicas</span>
-                </a>
-                <a href="pwa-notifications.html" class="action-btn">
-                    <span style="font-size: 2rem;">📱</span>
-                    <span>App & Notificaciones</span>
+                    <span>Reservas online</span>
                 </a>
             </div>
         </div>
