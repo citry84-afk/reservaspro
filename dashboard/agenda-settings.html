@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuración de Agenda - ReservasPro</title>
     <link rel="stylesheet" href="../css/mobile-optimization.css">
+    <script src="../js/multilanguage.js"></script>
     <style>
         .settings-container {
             max-width: 800px;
@@ -243,7 +244,7 @@
 <body>
     <header class="header">
         <a href="index.html" class="logo">⚙️ ReservasPro</a>
-        <span style="color: rgba(255, 255, 255, 0.8);">Configuración de Agenda</span>
+        <span style="color: rgba(255, 255, 255, 0.8);" data-translate="nav.settings">Configuración</span>
     </header>
     
     <div class="container">
@@ -256,7 +257,7 @@
             
             <!-- Configuración Principal -->
             <div class="settings-section">
-                <h2 class="settings-title">📅 Configuración de Agenda</h2>
+                <h2 class="settings-title">📅 <span data-translate="nav.settings">Configuración</span></h2>
                 
                 <div class="settings-grid">
                     <div class="setting-card">
@@ -422,9 +423,9 @@
             
             <!-- Acciones -->
             <div class="action-buttons">
-                <button class="btn btn-primary btn-large" onclick="saveSettings()">💾 Guardar Configuración</button>
-                <button class="btn btn-secondary btn-large" onclick="resetSettings()">🔄 Restaurar por Defecto</button>
-                <button class="btn btn-success btn-large" onclick="testConfiguration()">🧪 Probar Configuración</button>
+                <button class="btn btn-primary btn-large" onclick="saveSettings()">💾 <span data-translate="btn.save">Guardar</span></button>
+                <button class="btn btn-secondary btn-large" onclick="resetSettings()">🔄 <span data-translate="btn.reset">Restablecer</span></button>
+                <button class="btn btn-success btn-large" onclick="testConfiguration()">🧪 <span data-translate="btn.search">Buscar</span></button>
             </div>
         </div>
     </div>
