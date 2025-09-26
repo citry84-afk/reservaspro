@@ -1,47 +1,34 @@
-// Onboarding Manager
+// Simple Onboarding Manager
 class OnboardingManager {
     constructor() {
         this.currentStep = 1;
-        this.totalSteps = 3;
         this.isCompleted = localStorage.getItem('onboardingDone') === 'true';
         
-        // Expose functions globally immediately
+        // Expose functions globally
         window.closeOnboarding = () => this.closeOnboarding();
         window.saveStep1 = () => this.saveStep1();
         window.saveStep2 = () => this.saveStep2();
         window.saveStep3 = () => this.saveStep3();
         window.showStep = (step) => this.showStep(step);
+        window.startOnboarding = () => this.startOnboarding();
         
         // Auto-launch if not completed
         if (!this.isCompleted) {
-            this.waitForDOM();
-        }
-    }
-
-    waitForDOM() {
-        if (document.readyState === 'complete' && document.body) {
-            this.buildModal();
-        } else {
-            setTimeout(() => this.waitForDOM(), 100);
+            setTimeout(() => this.buildModal(), 500);
         }
     }
 
     buildModal() {
         if (!document.body) {
-            console.error('Document body not ready');
+            setTimeout(() => this.buildModal(), 100);
             return;
         }
         
         const modal = document.createElement('div');
         modal.id = 'rp-onb-modal';
         modal.style.cssText = `
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.4); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 2000;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); 
+            display: flex; align-items: center; justify-content: center; z-index: 2000;
         `;
         
         modal.innerHTML = `
@@ -64,7 +51,7 @@ class OnboardingManager {
                         </div>
                     </div>
                     <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
-                        <button onclick="window.saveStep1()" class="rp-onb-next" style="background: #1e40af; color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer;">Siguiente →</button>
+                        <button onclick="window.saveStep1()" style="background: #1e40af; color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer;">Siguiente →</button>
                     </div>
                 </div>
                 
@@ -119,7 +106,7 @@ class OnboardingManager {
         console.log(`Showing step ${step}`);
         
         // Hide all steps
-        for (let i = 1; i <= this.totalSteps; i++) {
+        for (let i = 1; i <= 3; i++) {
             const stepElement = document.getElementById(`rp-onb-step-${i}`);
             if (stepElement) {
                 stepElement.style.display = 'none';
@@ -141,7 +128,6 @@ class OnboardingManager {
         const service1 = document.getElementById('rp-onb-s1-name1')?.value || 'Corte';
         const service2 = document.getElementById('rp-onb-s1-name2')?.value || 'Tinte';
         
-        // Save services to localStorage
         const services = [
             { id: 1, name: service1, duration: 60, price: 25 },
             { id: 2, name: service2, duration: 90, price: 45 }
@@ -159,12 +145,11 @@ class OnboardingManager {
         const closeTime = document.getElementById('rp-onb-s2-close')?.value || '18:00';
         const interval = parseInt(document.getElementById('rp-onb-s2-interval')?.value || '30');
         
-        // Save schedule settings
         const agendaSettings = {
             openTime: openTime,
             closeTime: closeTime,
             slotInterval: interval,
-            workingDays: [1, 2, 3, 4, 5], // Monday to Friday
+            workingDays: [1, 2, 3, 4, 5],
             months: 3
         };
         localStorage.setItem('agendaSettings', JSON.stringify(agendaSettings));
@@ -179,7 +164,6 @@ class OnboardingManager {
         const template24h = document.getElementById('rp-onb-s3-t24')?.value || 'Hola {cliente}, te recordamos tu cita mañana a las {hora} para {servicio}.';
         const template2h = document.getElementById('rp-onb-s3-t2')?.value || 'Tu cita es en 2 horas ({hora}). ¡Te esperamos!';
         
-        // Save notification settings
         const notificationSettings = {
             reminder24h: 'sms',
             reminder2h: 'sms',
@@ -200,32 +184,24 @@ class OnboardingManager {
         localStorage.setItem('onboardingDone', 'true');
         this.isCompleted = true;
         
-        // Close modal
         const modal = document.getElementById('rp-onb-modal');
         if (modal) {
             modal.remove();
         }
         
-        // Mark onboarding as just completed to trigger mini-tour
         sessionStorage.setItem('onboardingJustCompleted', 'true');
-        
-        // Show completion message
         alert('¡Onboarding completado! Ahora puedes usar ReservasPro.');
-        
-        // Reload page to apply settings
         window.location.reload();
     }
 
     closeOnboarding() {
         console.log('Closing onboarding...');
-        
         const modal = document.getElementById('rp-onb-modal');
         if (modal) {
             modal.remove();
         }
     }
 
-    // Public method to start onboarding manually
     startOnboarding() {
         if (!this.isCompleted) {
             this.buildModal();
@@ -233,28 +209,14 @@ class OnboardingManager {
     }
 }
 
-// Initialize onboarding manager
-let onboardingManager;
-
+// Initialize when DOM is ready
 function initOnboarding() {
-    if (document.readyState === 'complete' && document.body) {
-        onboardingManager = new OnboardingManager();
-        window.onboardingManager = onboardingManager;
-    } else {
-        setTimeout(initOnboarding, 100);
-    }
+    window.onboardingManager = new OnboardingManager();
 }
 
-// Start initialization
+// Start when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initOnboarding);
 } else {
     initOnboarding();
 }
-
-// Fallback timeout
-setTimeout(() => {
-    if (!onboardingManager) {
-        initOnboarding();
-    }
-}, 2000);
