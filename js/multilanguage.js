@@ -746,8 +746,14 @@ class MultiLanguage {
     }
 }
 
-// Inicializar sistema multi-idioma
-window.multiLanguage = new MultiLanguage();
+// Inicializar sistema multi-idioma cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.multiLanguage = new MultiLanguage();
+    });
+} else {
+    window.multiLanguage = new MultiLanguage();
+}
 
 // Función helper para traducir
 function t(key, params = {}) {

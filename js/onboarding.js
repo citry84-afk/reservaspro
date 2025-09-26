@@ -148,22 +148,13 @@
         `;
         document.body.appendChild(modal);
         
-        // Add event listeners after DOM is updated
-        setTimeout(() => {
-            const closeBtn = document.getElementById('closeOnboardingBtn');
-            const save1Btn = document.getElementById('saveStep1Btn');
-            const back1Btn = document.getElementById('backToStep1Btn');
-            const save2Btn = document.getElementById('saveStep2Btn');
-            const back2Btn = document.getElementById('backToStep2Btn');
-            const save3Btn = document.getElementById('saveStep3Btn');
-            
-            if (closeBtn) closeBtn.addEventListener('click', closeOnboarding);
-            if (save1Btn) save1Btn.addEventListener('click', saveStep1);
-            if (back1Btn) back1Btn.addEventListener('click', () => showStep(1));
-            if (save2Btn) save2Btn.addEventListener('click', saveStep2);
-            if (back2Btn) back2Btn.addEventListener('click', () => showStep(2));
-            if (save3Btn) save3Btn.addEventListener('click', saveStep3);
-        }, 100);
+        // Add event listeners using onclick to avoid scope issues
+        document.getElementById('closeOnboardingBtn').onclick = closeOnboarding;
+        document.getElementById('saveStep1Btn').onclick = saveStep1;
+        document.getElementById('backToStep1Btn').onclick = () => showStep(1);
+        document.getElementById('saveStep2Btn').onclick = saveStep2;
+        document.getElementById('backToStep2Btn').onclick = () => showStep(2);
+        document.getElementById('saveStep3Btn').onclick = saveStep3;
     }
 
     function maybeAutoLaunch() {
