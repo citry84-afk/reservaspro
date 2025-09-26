@@ -8,25 +8,25 @@
 
     const tourSteps = [
         {
-            target: '[href="/dashboard/calendar.html"]',
+            target: 'a[href*="calendar"]',
             title: '📅 Calendario',
             content: 'Aquí verás todas tus citas organizadas por día, semana o mes. Puedes cambiar la vista con los botones superiores.',
             position: 'bottom'
         },
         {
-            target: '[href="/dashboard/agenda-settings.html"]',
+            target: 'a[href*="agenda-settings"]',
             title: '⚙️ Configuración',
             content: 'Ajusta horarios, servicios, intervalos de slots y notificaciones desde aquí.',
             position: 'bottom'
         },
         {
-            target: '[href="/dashboard/notifications.html"]',
+            target: 'a[href*="notifications"]',
             title: '📱 Notificaciones',
             content: 'Configura plantillas SMS y envía recordatorios a tus clientes automáticamente.',
             position: 'bottom'
         },
         {
-            target: '.action-btn[onclick="startOnboarding()"]',
+            target: 'a[onclick*="startOnboarding"]',
             title: '🚀 Onboarding',
             content: 'Si necesitas reconfigurar algo, puedes volver a ejecutar el asistente de configuración inicial.',
             position: 'top'
@@ -168,6 +168,7 @@
         const element = document.querySelector(step.target);
         
         if (!element) {
+            console.log(`Tour step ${stepIndex + 1}: Element not found for selector "${step.target}"`);
             // Skip this step if element not found
             showStep(stepIndex + 1);
             return;
@@ -265,8 +266,13 @@
         if (onboardingJustCompleted && !tourCompleted) {
             // Clear the flag
             sessionStorage.removeItem('onboardingJustCompleted');
-            // Start tour after a short delay
-            setTimeout(startTour, 1000);
+            // Start tour after a short delay to ensure all elements are loaded
+            setTimeout(() => {
+                // Check if we're on the dashboard page
+                if (window.location.pathname.includes('dashboard')) {
+                    startTour();
+                }
+            }, 1500);
         }
     });
 })();
