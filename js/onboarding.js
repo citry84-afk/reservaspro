@@ -3,9 +3,15 @@
     window.__onboardingInjected = true;
 
     function showStep(step) {
+        console.log('Showing step:', step);
         document.querySelectorAll('.rp-onb-step').forEach(el => el.style.display = 'none');
         const el = document.getElementById(`rp-onb-step-${step}`);
-        if (el) el.style.display = 'block';
+        if (el) {
+            el.style.display = 'block';
+            console.log('Step', step, 'displayed');
+        } else {
+            console.error('Step element not found:', `rp-onb-step-${step}`);
+        }
         localStorage.setItem('onboardingStep', String(step));
     }
 
@@ -16,10 +22,12 @@
     }
 
     function saveStep1() {
+        console.log('Saving step 1...');
         const services = [
             { name: document.getElementById('rp-onb-s1-name1').value || 'Corte', duration: 30, price: 20 },
             { name: document.getElementById('rp-onb-s1-name2').value || 'Tinte', duration: 90, price: 45 }
         ];
+        console.log('Services:', services);
         localStorage.setItem('businessServices', JSON.stringify(services));
         showStep(2);
     }
@@ -135,13 +143,22 @@
         `;
         document.body.appendChild(modal);
         
-        // Add event listeners
-        document.getElementById('closeOnboardingBtn').addEventListener('click', closeOnboarding);
-        document.getElementById('saveStep1Btn').addEventListener('click', saveStep1);
-        document.getElementById('backToStep1Btn').addEventListener('click', () => showStep(1));
-        document.getElementById('saveStep2Btn').addEventListener('click', saveStep2);
-        document.getElementById('backToStep2Btn').addEventListener('click', () => showStep(2));
-        document.getElementById('saveStep3Btn').addEventListener('click', saveStep3);
+        // Add event listeners after DOM is updated
+        setTimeout(() => {
+            const closeBtn = document.getElementById('closeOnboardingBtn');
+            const save1Btn = document.getElementById('saveStep1Btn');
+            const back1Btn = document.getElementById('backToStep1Btn');
+            const save2Btn = document.getElementById('saveStep2Btn');
+            const back2Btn = document.getElementById('backToStep2Btn');
+            const save3Btn = document.getElementById('saveStep3Btn');
+            
+            if (closeBtn) closeBtn.addEventListener('click', closeOnboarding);
+            if (save1Btn) save1Btn.addEventListener('click', saveStep1);
+            if (back1Btn) back1Btn.addEventListener('click', () => showStep(1));
+            if (save2Btn) save2Btn.addEventListener('click', saveStep2);
+            if (back2Btn) back2Btn.addEventListener('click', () => showStep(2));
+            if (save3Btn) save3Btn.addEventListener('click', saveStep3);
+        }, 100);
     }
 
     function maybeAutoLaunch() {
