@@ -3,120 +3,409 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservar Cita - Peluquería María</title>
+    <title>Reservar Cita Online - ReservasPro</title>
     <link rel="stylesheet" href="/css/mobile-optimization.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui; background: #f8fafc; }
-        .header { background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
-        .header h1 { color: #1e40af; margin-bottom: 0.5rem; }
-        .header p { color: #6b7280; }
-        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
-        .step { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .step h3 { color: #374151; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .step-number { background: #1e40af; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-        .service-card { border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; cursor: pointer; transition: all 0.3s; }
-        .service-card:hover { border-color: #1e40af; }
-        .service-card.selected { border-color: #1e40af; background: #eff6ff; }
-        .service-card h4 { color: #374151; margin-bottom: 0.5rem; }
-        .service-card .duration { color: #6b7280; font-size: 0.875rem; }
-        .service-card .price { color: #1e40af; font-weight: 600; margin-top: 0.5rem; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1rem; margin-bottom: 2rem; }
-        .calendar-day { border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .calendar-day:hover { border-color: #1e40af; }
-        .calendar-day.selected { border-color: #1e40af; background: #eff6ff; }
-        .calendar-day.disabled { opacity: 0.3; cursor: not-allowed; }
-        .times-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; }
-        .time-slot { border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .time-slot:hover { border-color: #1e40af; }
-        .time-slot.selected { border-color: #1e40af; background: #eff6ff; }
-        .time-slot.unavailable { background: #fef2f2; border-color: #fecaca; color: #ef4444; cursor: not-allowed; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500; }
-        .form-group input { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; }
-        .btn { background: #10b981; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%; }
-        .btn:hover { background: #059669; }
-        .btn:disabled { background: #9ca3af; cursor: not-allowed; }
-        .summary { background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; }
-        .summary h4 { color: #0c4a6e; margin-bottom: 0.5rem; }
-        .summary-item { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #1e40af;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .booking-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .step {
+            margin-bottom: 2rem;
+        }
+        
+        .step-title {
+            color: #1e40af;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .step-number {
+            background: #1e40af;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .service-card:hover {
+            border-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+        }
+        
+        .service-card.selected {
+            border-color: #1e40af;
+            background: #eff6ff;
+        }
+        
+        .service-card h4 {
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .service-card .duration {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service-card .price {
+            color: #059669;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .date-picker {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .date-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .date-option:hover {
+            border-color: #1e40af;
+        }
+        
+        .date-option.selected {
+            border-color: #1e40af;
+            background: #eff6ff;
+        }
+        
+        .date-option.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .date-day {
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1rem;
+        }
+        
+        .date-weekday {
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        
+        .times-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .time-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .time-option:hover {
+            border-color: #1e40af;
+        }
+        
+        .time-option.selected {
+            border-color: #1e40af;
+            background: #eff6ff;
+        }
+        
+        .time-option.unavailable {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #ef4444;
+            cursor: not-allowed;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+        
+        .summary {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary h4 {
+            color: #0c4a6e;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+        
+        .summary-item:last-child {
+            border-top: 1px solid #bae6fd;
+            padding-top: 0.75rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #047857;
+        }
+        
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
         .hidden { display: none; }
-        .debug { background: #fef3c7; border: 1px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 8px; font-family: monospace; font-size: 0.875rem; }
-        .debug h4 { margin-bottom: 0.5rem; color: #92400e; }
+        
+        .success-message {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .success-message h2 {
+            color: #059669;
+            margin-bottom: 1rem;
+        }
+        
+        .success-message p {
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+                padding: 0 0.5rem;
+            }
+            
+            .booking-card {
+                padding: 1.5rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            
+            .date-picker {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>✂️ Peluquería María</h1>
-        <p>Reserva tu cita online de forma rápida y sencilla</p>
+        <h1>📅 Reserva tu Cita Online</h1>
+        <p>Rápido, fácil y sin llamadas</p>
     </div>
     
     <div class="container">
-        <!-- Debug Info -->
-        <div class="debug">
-            <h4>🐛 Debug Info</h4>
-            <div id="debugText">Iniciando sistema...</div>
-        </div>
-        
-        <!-- Paso 1: Seleccionar Servicio -->
-        <div class="step" id="step1">
-            <h3><span class="step-number">1</span> Selecciona tu servicio</h3>
-            <div class="services-grid" id="servicesGrid">
-                <!-- Generated by JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Paso 2: Seleccionar Fecha -->
-        <div class="step hidden" id="step2">
-            <h3><span class="step-number">2</span> Elige la fecha</h3>
-            <div class="calendar-grid" id="calendarGrid">
-                <!-- Generated by JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Paso 3: Seleccionar Hora -->
-        <div class="step hidden" id="step3">
-            <h3><span class="step-number">3</span> Selecciona la hora</h3>
-            <div class="times-grid" id="timesGrid">
-                <!-- Generated by JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Paso 4: Datos del Cliente -->
-        <div class="step hidden" id="step4">
-            <h3><span class="step-number">4</span> Tus datos</h3>
-            
-            <div class="summary">
-                <h4>📋 Resumen de tu reserva</h4>
-                <div class="summary-item"><span>Servicio:</span> <span id="summaryService">-</span></div>
-                <div class="summary-item"><span>Fecha:</span> <span id="summaryDate">-</span></div>
-                <div class="summary-item"><span>Hora:</span> <span id="summaryTime">-</span></div>
-                <div class="summary-item"><span>Duración:</span> <span id="summaryDuration">-</span></div>
-                <div class="summary-item"><span><strong>Precio:</strong></span> <span id="summaryPrice"><strong>-</strong></span></div>
+        <div class="booking-card">
+            <!-- Paso 1: Servicio -->
+            <div class="step" id="step1">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    ¿Qué servicio necesitas?
+                </div>
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Generated by JavaScript -->
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="clientName" data-translate="form.client_name">Nombre del Cliente</label>
-                <input type="text" id="clientName" required placeholder="Ej: María García">
+            <!-- Paso 2: Fecha -->
+            <div class="step hidden" id="step2">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    ¿Cuándo prefieres venir?
+                </div>
+                <div class="date-picker" id="datePicker">
+                    <!-- Generated by JavaScript -->
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="clientPhone" data-translate="form.client_phone">Teléfono</label>
-                <input type="tel" id="clientPhone" required placeholder="Ej: 666 777 888">
+            <!-- Paso 3: Hora -->
+            <div class="step hidden" id="step3">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    ¿A qué hora?
+                </div>
+                <div class="times-grid" id="timesGrid">
+                    <!-- Generated by JavaScript -->
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="clientEmail" data-translate="form.client_email">Email</label>
-                <input type="email" id="clientEmail" placeholder="Ej: maria@gmail.com">
+            <!-- Paso 4: Datos -->
+            <div class="step hidden" id="step4">
+                <div class="step-title">
+                    <span class="step-number">4</span>
+                    Tus datos
+                </div>
+                
+                <div class="summary">
+                    <h4>📋 Resumen de tu reserva</h4>
+                    <div class="summary-item">
+                        <span>Servicio:</span>
+                        <span id="summaryService">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Fecha:</span>
+                        <span id="summaryDate">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Hora:</span>
+                        <span id="summaryTime">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Duración:</span>
+                        <span id="summaryDuration">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Precio:</span>
+                        <span id="summaryPrice">-</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientName">Tu nombre *</label>
+                    <input type="text" id="clientName" required placeholder="Ej: María García">
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientPhone">Teléfono *</label>
+                    <input type="tel" id="clientPhone" required placeholder="Ej: 666 777 888">
+                </div>
+                
+                <div class="form-group">
+                    <label for="clientEmail">Email (opcional)</label>
+                    <input type="email" id="clientEmail" placeholder="Ej: maria@gmail.com">
+                </div>
+                
+                <button class="btn" onclick="confirmBooking()">
+                    ✅ Confirmar Reserva
+                </button>
             </div>
             
-            <div class="form-group">
-                <label for="clientNotes" data-translate="form.notes">Notas</label>
-                <input type="text" id="clientNotes" placeholder="Alguna petición especial...">
+            <!-- Mensaje de éxito -->
+            <div class="step hidden" id="successStep">
+                <div class="success-message">
+                    <h2>¡Reserva Confirmada! 🎉</h2>
+                    <p>Te hemos enviado un mensaje de confirmación.</p>
+                    <p>El negocio confirmará tu cita pronto.</p>
+                    <button class="btn" onclick="location.reload()">
+                        Hacer otra reserva
+                    </button>
+                </div>
             </div>
-            
-            <button class="btn" onclick="confirmBooking()"><span>✅ </span><span data-translate="btn.confirm">Confirmar</span></button>
         </div>
     </div>
 
@@ -127,47 +416,32 @@
         let selectedDate = null;
         let selectedTime = null;
         
-        function debugLog(message) {
-            console.log('🐛 BOOKING DEBUG:', message);
-            const debugText = document.getElementById('debugText');
-            debugText.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
-        }
-        
-        // Configuración por defecto
-        const defaultSchedule = {
-            'lunes': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'martes': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'miércoles': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'jueves': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'viernes': { active: true, openTime: '09:00', closeTime: '18:00' },
-            'sábado': { active: true, openTime: '09:00', closeTime: '15:00' },
-            'domingo': { active: false, openTime: '00:00', closeTime: '00:00' }
-        };
-        
-        const defaultServices = [
-            { name: 'Corte', duration: 30, price: 15 },
-            { name: 'Tinte', duration: 90, price: 45 },
-            { name: 'Mechas', duration: 120, price: 65 },
-            { name: 'Lavado + Peinado', duration: 45, price: 20 },
-            { name: 'Tratamiento', duration: 60, price: 35 }
-        ];
-        
         // Cargar servicios del negocio
         function loadServices() {
-            const services = JSON.parse(localStorage.getItem('businessServices') || JSON.stringify(defaultServices));
-            debugLog('Servicios cargados: ' + services.length);
+            const services = JSON.parse(localStorage.getItem('services') || '[]');
+            
+            if (services.length === 0) {
+                // Servicios por defecto si no hay configuración
+                const defaultServices = [
+                    { id: 1, name: 'Corte', duration: 60, price: 25 },
+                    { id: 2, name: 'Tinte', duration: 90, price: 45 }
+                ];
+                localStorage.setItem('services', JSON.stringify(defaultServices));
+                loadServices();
+                return;
+            }
             
             const grid = document.getElementById('servicesGrid');
             grid.innerHTML = '';
             
-            services.forEach((service, index) => {
+            services.forEach(service => {
                 const card = document.createElement('div');
                 card.className = 'service-card';
                 card.onclick = () => selectService(service, card);
                 
                 card.innerHTML = `
                     <h4>${service.name}</h4>
-                    <div class="duration">${service.duration} minutos</div>
+                    <div class="duration">${service.duration} min</div>
                     <div class="price">€${service.price}</div>
                 `;
                 
@@ -180,68 +454,47 @@
             element.classList.add('selected');
             
             selectedService = service;
-            debugLog('Servicio seleccionado: ' + service.name + ' (' + service.duration + 'min)');
             showStep(2);
-            generateCalendar();
+            generateDatePicker();
         }
         
-        function generateCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            grid.innerHTML = '';
+        function generateDatePicker() {
+            const picker = document.getElementById('datePicker');
+            picker.innerHTML = '';
             
             const today = new Date();
-            const schedule = JSON.parse(localStorage.getItem('businessSchedule') || JSON.stringify(defaultSchedule));
-            debugLog('Horarios cargados: ' + Object.keys(schedule).length + ' días');
-            debugLog('Horarios: ' + JSON.stringify(schedule));
+            const schedule = JSON.parse(localStorage.getItem('schedule') || '{}');
+            const workingDays = schedule.workingDays || [1, 2, 3, 4, 5]; // Lunes a viernes por defecto
             
-            // Obtener configuración de meses de agenda
-            const agendaSettings = JSON.parse(localStorage.getItem("agendaSettings") || "{}");
-            const monthsAhead = agendaSettings.months || 3;
-            const daysAhead = monthsAhead * 30; // Aproximadamente 30 días por mes
-
-            debugLog("Meses de agenda configurados: " + monthsAhead + " (" + daysAhead + " días)");
-
-            // Generar días según configuración
-            for (let i = 0; i < daysAhead; i++) {
+            // Mostrar próximos 14 días
+            for (let i = 0; i < 14; i++) {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);
                 
-                // Obtener número de día de la semana (0=domingo, 1=lunes, etc.)
                 const dayOfWeek = date.getDay();
-                const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-                const dayName = dayNames[dayOfWeek];
-                
-                debugLog('Día ' + i + ': ' + dayName + ' (getDay=' + dayOfWeek + ')');
-                
-                const isWorkingDay = schedule[dayName]?.active !== false;
-                debugLog('Día ' + dayName + ' activo: ' + isWorkingDay + ' (config: ' + JSON.stringify(schedule[dayName]) + ')');
+                const isWorkingDay = workingDays.includes(dayOfWeek);
                 
                 const dayDiv = document.createElement('div');
-                dayDiv.className = `calendar-day ${!isWorkingDay ? 'disabled' : ''}`;
+                dayDiv.className = `date-option ${!isWorkingDay ? 'disabled' : ''}`;
                 
                 if (isWorkingDay) {
                     dayDiv.onclick = () => selectDate(date, dayDiv);
                 }
                 
                 dayDiv.innerHTML = `
-                    <div style="font-weight: 600;">${date.getDate()}</div>
-                    <div style="font-size: 0.75rem; color: #6b7280;">${date.toLocaleDateString('es-ES', { weekday: 'short' })}</div>
+                    <div class="date-day">${date.getDate()}</div>
+                    <div class="date-weekday">${date.toLocaleDateString('es-ES', { weekday: 'short' })}</div>
                 `;
                 
-                grid.appendChild(dayDiv);
+                picker.appendChild(dayDiv);
             }
         }
         
         function selectDate(date, element) {
-            document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
+            document.querySelectorAll('.date-option').forEach(option => option.classList.remove('selected'));
             element.classList.add('selected');
             
             selectedDate = date;
-            const dayOfWeek = date.getDay();
-            const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-            const dayName = dayNames[dayOfWeek];
-            
-            debugLog('Fecha seleccionada: ' + date.toLocaleDateString('es-ES') + ' (' + dayName + ')');
             showStep(3);
             generateTimeSlots();
         }
@@ -250,57 +503,33 @@
             const grid = document.getElementById('timesGrid');
             grid.innerHTML = '';
             
-            const schedule = JSON.parse(localStorage.getItem('businessSchedule') || JSON.stringify(defaultSchedule));
+            const schedule = JSON.parse(localStorage.getItem('schedule') || '{}');
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             
-            const dayOfWeek = selectedDate.getDay();
-            const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-            const dayName = dayNames[dayOfWeek];
+            const openTime = schedule.openTime || '09:00';
+            const closeTime = schedule.closeTime || '18:00';
+            const interval = parseInt(schedule.slotInterval || '30');
             
-            debugLog('Generando horarios para: ' + dayName);
-            
-            const daySchedule = schedule[dayName];
-            debugLog('Configuración del día: ' + JSON.stringify(daySchedule));
-            
-            if (!daySchedule || !daySchedule.active) {
-                debugLog('Día no activo - mostrando mensaje');
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444;">Este día no está disponible</p>';
-                return;
-            }
-            
-            const openTime = daySchedule.openTime || daySchedule.open;
-            const closeTime = daySchedule.closeTime || daySchedule.close;
-            const serviceDuration = selectedService.duration;
-            
-            debugLog(`Horario: ${openTime} - ${closeTime}, Servicio: ${serviceDuration}min`);
-            
-            // Obtener intervalo desde configuración (default 30)
-            const agendaSettings = JSON.parse(localStorage.getItem('agendaSettings') || '{}');
-            const intervalMinutes = parseInt(agendaSettings.slotInterval || 30);
-            // Generar slots por intervalo configurado
             const slots = [];
             let currentTime = openTime;
             
             while (currentTime < closeTime) {
-                const endTime = addMinutes(currentTime, serviceDuration);
+                const endTime = addMinutes(currentTime, selectedService.duration);
                 if (endTime <= closeTime) {
-                    const isAvailable = checkAvailability(selectedDate, currentTime, serviceDuration, appointments);
+                    const isAvailable = checkAvailability(selectedDate, currentTime, appointments);
                     slots.push({ time: currentTime, available: isAvailable });
                 }
-                currentTime = addMinutes(currentTime, intervalMinutes);
+                currentTime = addMinutes(currentTime, interval);
             }
             
-            debugLog('Slots generados: ' + slots.length);
-            debugLog('Slots: ' + JSON.stringify(slots));
-            
             if (slots.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444;">No hay horarios disponibles para este día</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444;">No hay horarios disponibles</p>';
                 return;
             }
             
             slots.forEach(slot => {
                 const timeDiv = document.createElement('div');
-                timeDiv.className = `time-slot ${!slot.available ? 'unavailable' : ''}`;
+                timeDiv.className = `time-option ${!slot.available ? 'unavailable' : ''}`;
                 timeDiv.textContent = slot.time;
                 
                 if (slot.available) {
@@ -312,11 +541,10 @@
         }
         
         function selectTime(time, element) {
-            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+            document.querySelectorAll('.time-option').forEach(option => option.classList.remove('selected'));
             element.classList.add('selected');
             
             selectedTime = time;
-            debugLog('Hora seleccionada: ' + time);
             updateSummary();
             showStep(4);
         }
@@ -339,7 +567,7 @@
             }
             
             const booking = {
-                id: Date.now().toString(),
+                id: Date.now(),
                 client: name,
                 phone: phone,
                 email: document.getElementById('clientEmail').value,
@@ -349,7 +577,6 @@
                 date: selectedDate.toISOString().split('T')[0],
                 time: selectedTime,
                 status: 'pending',
-                notes: document.getElementById('clientNotes').value,
                 createdAt: new Date().toISOString(),
                 source: 'public_booking'
             };
@@ -357,25 +584,13 @@
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             appointments.push(booking);
             localStorage.setItem('appointments', JSON.stringify(appointments));
+            
+            // Enviar notificación si está disponible
             if (window.notificationManager) {
                 window.notificationManager.sendBookingConfirmation(booking);
             }
             
-            debugLog('Reserva guardada: ' + booking.id);
-            
-            alert(`✅ ¡Reserva realizada con éxito!
-
-📋 Detalles:
-• Cliente: ${name}
-• Servicio: ${selectedService.name}
-• Fecha: ${selectedDate.toLocaleDateString('es-ES')}
-• Hora: ${selectedTime}
-• Precio: €${selectedService.price}
-
-📱 Recibirás confirmación por WhatsApp/SMS
-⚠️ Tu cita está PENDIENTE de confirmación por el negocio`);
-            
-            location.reload();
+            showStep(5); // Mostrar mensaje de éxito
         }
         
         function addMinutes(time, minutes) {
@@ -386,7 +601,7 @@
                    date.getMinutes().toString().padStart(2, '0');
         }
         
-        function checkAvailability(date, time, duration, appointments) {
+        function checkAvailability(date, time, appointments) {
             const dateStr = date.toISOString().split('T')[0];
             return !appointments.some(apt => 
                 apt.date === dateStr && 
@@ -397,13 +612,11 @@
         
         function showStep(stepNumber) {
             document.querySelectorAll('.step').forEach(step => step.classList.add('hidden'));
-            for (let i = 1; i <= stepNumber; i++) {
-                document.getElementById(`step${i}`).classList.remove('hidden');
-            }
+            document.getElementById(`step${stepNumber}`).classList.remove('hidden');
         }
         
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            debugLog('Iniciando sistema de reservas...');
             loadServices();
         });
     </script>
