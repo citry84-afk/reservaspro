@@ -41,12 +41,18 @@
         { href: 'payments.html', key: 'nav.payments', text: 'Pagos' },
         { href: 'notifications.html', key: 'nav.notifications', text: 'Notificaciones' }
     ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
     links.forEach(l => {
         const a = document.createElement('a');
         a.href = l.href;
         a.setAttribute('data-translate', l.key);
         a.textContent = l.text;
         a.style.cssText = 'color:#64748b;text-decoration:none;font-weight:600;';
+        if (currentPath === l.href) {
+            a.style.color = '#1e40af';
+            a.style.borderBottom = '2px solid #1e40af';
+            a.style.paddingBottom = '2px';
+        }
         nav.appendChild(a);
     });
     left.appendChild(nav);
