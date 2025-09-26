@@ -762,12 +762,17 @@ function initMultiLanguage() {
     }
 }
 
-// Iniciar cuando el DOM esté listo
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMultiLanguage);
-} else {
-    initMultiLanguage();
+// Esperar a que el DOM esté completamente listo
+function waitForDOM() {
+    if (document.readyState === 'complete' && document.body) {
+        initMultiLanguage();
+    } else {
+        setTimeout(waitForDOM, 50);
+    }
 }
+
+// Iniciar
+waitForDOM();
 
 // Función helper para traducir
 function t(key, params = {}) {
