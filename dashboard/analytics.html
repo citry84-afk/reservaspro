@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Avanzados - ReservasPro</title>
+    <link rel="stylesheet" href="../css/mobile-optimization.css">
+    <script src="../js/multilanguage.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui; background: #f8fafc; }
@@ -295,22 +297,22 @@
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="logo">📊 ReservasPro Analytics</a>
-        <span style="color: #64748b;">Análisis Avanzado</span>
+        <a href="index.html" class="logo" data-translate="nav.analytics">📊 Analytics</a>
+        <span style="color: #64748b;" data-translate="nav.dashboard">Dashboard</span>
     </header>
     
     <div class="container">
         <div class="page-header">
-            <h1>📊 Analytics Avanzados</h1>
+            <h1>📊 <span data-translate="nav.analytics">Analytics</span></h1>
             <div>
-                <button class="btn btn-secondary" onclick="refreshData()">🔄 Actualizar</button>
-                <button class="btn btn-success" onclick="exportReport()">📊 Exportar Reporte</button>
+                <button class="btn btn-secondary" onclick="refreshData()">🔄 <span data-translate="btn.refresh">Actualizar</span></button>
+                <button class="btn btn-success" onclick="exportReport()">📊 <span data-translate="btn.export">Exportar</span></button>
             </div>
         </div>
         
         <!-- Filtros -->
         <div class="filters">
-            <h3>🔍 Filtros de Análisis</h3>
+            <h3>🔍 <span data-translate="btn.filter">Filtrar</span></h3>
             <div class="filter-group">
                 <div class="filter-item">
                     <label for="dateRange">Período</label>
@@ -355,7 +357,7 @@
         <!-- Estadísticas Principales -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-title">Reservas Totales</div>
+                <div class="stat-title" data-translate="analytics.total_bookings">Reservas Totales</div>
                 <div class="stat-value" id="totalBookings">127</div>
                 <div class="stat-change" id="bookingsChange">
                     <span>↗️</span>
@@ -363,7 +365,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Ingresos Totales</div>
+                <div class="stat-title" data-translate="analytics.total_revenue">Ingresos Totales</div>
                 <div class="stat-value" id="totalRevenue">€3,245</div>
                 <div class="stat-change" id="revenueChange">
                     <span>↗️</span>
@@ -371,7 +373,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Tasa de Conversión</div>
+                <div class="stat-title" data-translate="analytics.conversion_rate">Tasa de Conversión</div>
                 <div class="stat-value" id="conversionRate">68%</div>
                 <div class="stat-change" id="conversionChange">
                     <span>↗️</span>
@@ -379,7 +381,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Clientes Únicos</div>
+                <div class="stat-title" data-translate="analytics.unique_clients">Clientes Únicos</div>
                 <div class="stat-value" id="uniqueClients">89</div>
                 <div class="stat-change" id="clientsChange">
                     <span>↗️</span>
@@ -387,7 +389,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Tiempo Promedio</div>
+                <div class="stat-title" data-translate="analytics.avg_duration">Duración Promedio</div>
                 <div class="stat-value" id="avgDuration">45min</div>
                 <div class="stat-change" id="durationChange">
                     <span>↘️</span>
@@ -395,7 +397,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Satisfacción</div>
+                <div class="stat-title" data-translate="analytics.satisfaction">Satisfacción</div>
                 <div class="stat-value" id="satisfaction">4.8★</div>
                 <div class="stat-change" id="satisfactionChange">
                     <span>↗️</span>
@@ -407,7 +409,7 @@
         <!-- Gráficos Principales -->
         <div class="charts-grid">
             <div class="chart-card">
-                <h3>�� Reservas por Día</h3>
+                <h3>📅 Reservas por Día</h3>
                 <div class="chart-container">
                     <div class="chart-bars" id="bookingsChart">
                         <!-- Generado dinámicamente -->

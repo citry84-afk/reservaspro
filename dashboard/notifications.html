@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔔 Notificaciones - ReservasPro</title>
     <script src="../js/notifications.js"></script>
+    <script src="../js/multilanguage.js"></script>
+    <link rel="stylesheet" href="../css/mobile-optimization.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui; background: #f8fafc; }
@@ -24,19 +26,19 @@
 <body>
     <div class="header">
         <div class="container">
-            <h1>🔔 Notificaciones</h1>
-            <a href="index.html">← Dashboard</a>
+            <h1>🔔 <span data-translate="nav.notifications">Notificaciones</span></h1>
+            <a href="index.html" data-translate="nav.dashboard">← Dashboard</a>
         </div>
     </div>
     
     <div class="container">
         <div class="hero">
-            <h1>🔔 Sistema de Notificaciones</h1>
-            <p>Configura recordatorios automáticos y confirmaciones</p>
+            <h1>🔔 <span data-translate="nav.notifications">Notificaciones</span></h1>
+            <p data-translate="pwa.notifications">Notificaciones</p>
         </div>
         
         <div class="card">
-            <h3>📱 Recordatorios</h3>
+            <h3>📱 <span data-translate="nav.notifications">Notificaciones</span></h3>
             <div class="form-group">
                 <label for="reminder24h">Recordatorio 24h antes</label>
                 <select id="reminder24h">
@@ -70,8 +72,8 @@
         </div>
         
         <div class="card">
-            <button class="btn" onclick="saveNotifications()">💾 Guardar</button>
-            <button class="btn btn-test" onclick="testNotifications()">🧪 Probar</button>
+            <button class="btn" onclick="saveNotifications()">💾 <span data-translate="btn.save">Guardar</span></button>
+            <button class="btn btn-test" onclick="testNotifications()">🧪 <span data-translate="btn.confirm">Confirmar</span></button>
         </div>
     </div>
 
