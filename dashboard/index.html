@@ -8,6 +8,7 @@
     <script src="/js/multilanguage.js"></script>
     <script src="/js/common-header.js" defer></script>
     <script src="/js/onboarding.js" defer></script>
+    <script src="/js/mini-tour.js" defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui; background: #f8fafc; }
@@ -184,7 +185,11 @@
             <div class="actions">
                 <a href="#" class="action-btn" onclick="startOnboarding()">
                     <span style="font-size: 2rem;">🚀</span>
-                    <span>Iniciar Onboarding</span>
+                    <span data-translate="btn.start_onboarding">Iniciar Onboarding</span>
+                </a>
+                <a href="#" class="action-btn" onclick="miniTour.start()">
+                    <span style="font-size: 2rem;">🎯</span>
+                    <span data-translate="btn.take_tour">Tomar Tour</span>
                 </a>
                 <a href="calendar-enhanced.html" class="action-btn">
                     <span style="font-size: 2rem;">📅</span>

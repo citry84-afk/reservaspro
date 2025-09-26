@@ -28,6 +28,15 @@ class MultiLanguage {
                 'btn.search': 'Buscar',
                 'btn.filter': 'Filtrar',
                 'btn.reset': 'Restablecer',
+                'btn.start_onboarding': 'Iniciar Onboarding',
+                'btn.take_tour': 'Tomar Tour',
+                'btn.previous': 'Anterior',
+                'btn.next': 'Siguiente',
+                'btn.day_view': 'Día',
+                'btn.week_view': 'Semana',
+                'btn.month_view': 'Mes',
+                'btn.advanced_mode': 'Modo Avanzado',
+                'btn.simplified_mode': 'Modo Simplificado',
                 
                 // Estados
                 'status.pending': 'Pendiente',
@@ -162,6 +171,15 @@ class MultiLanguage {
                 'btn.search': 'Search',
                 'btn.filter': 'Filter',
                 'btn.reset': 'Reset',
+                'btn.start_onboarding': 'Start Onboarding',
+                'btn.take_tour': 'Take Tour',
+                'btn.previous': 'Previous',
+                'btn.next': 'Next',
+                'btn.day_view': 'Day',
+                'btn.week_view': 'Week',
+                'btn.month_view': 'Month',
+                'btn.advanced_mode': 'Advanced Mode',
+                'btn.simplified_mode': 'Simplified Mode',
                 
                 // States
                 'status.pending': 'Pending',
@@ -296,6 +314,15 @@ class MultiLanguage {
                 'btn.search': 'Rechercher',
                 'btn.filter': 'Filtrer',
                 'btn.reset': 'Réinitialiser',
+                'btn.start_onboarding': 'Démarrer Onboarding',
+                'btn.take_tour': 'Faire le Tour',
+                'btn.previous': 'Précédent',
+                'btn.next': 'Suivant',
+                'btn.day_view': 'Jour',
+                'btn.week_view': 'Semaine',
+                'btn.month_view': 'Mois',
+                'btn.advanced_mode': 'Mode Avancé',
+                'btn.simplified_mode': 'Mode Simplifié',
                 
                 // States
                 'status.pending': 'En attente',
@@ -430,6 +457,15 @@ class MultiLanguage {
                 'btn.search': 'Cerca',
                 'btn.filter': 'Filtra',
                 'btn.reset': 'Ripristina',
+                'btn.start_onboarding': 'Inizia Onboarding',
+                'btn.take_tour': 'Fai il Tour',
+                'btn.previous': 'Precedente',
+                'btn.next': 'Successivo',
+                'btn.day_view': 'Giorno',
+                'btn.week_view': 'Settimana',
+                'btn.month_view': 'Mese',
+                'btn.advanced_mode': 'Modalità Avanzata',
+                'btn.simplified_mode': 'Modalità Semplificata',
                 
                 // States
                 'status.pending': 'In attesa',

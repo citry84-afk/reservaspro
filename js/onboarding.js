@@ -58,6 +58,9 @@
         };
         localStorage.setItem('businessNotifications', JSON.stringify(notifications));
         closeOnboarding();
+        
+        // Mark onboarding as just completed to trigger mini-tour
+        sessionStorage.setItem('onboardingJustCompleted', 'true');
     }
 
     function buildModal() {
