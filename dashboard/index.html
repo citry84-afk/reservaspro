@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - ReservasPro</title>
+    <link rel="stylesheet" href="/css/mobile-optimization.css">
+    <script src="/js/multilanguage.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui; background: #f8fafc; }
@@ -133,13 +135,13 @@
 </head>
 <body>
     <header class="header">
-        <a href="../" class="logo">📅 ReservasPro</a>
+        <a href="../" class="logo" data-translate="nav.dashboard">📅 Dashboard</a>
         <span style="color: #64748b;">Peluquería María</span>
     </header>
     
     <div class="container">
         <div class="page-header">
-            <h1>Dashboard</h1>
+            <h1 data-translate="nav.dashboard">Dashboard</h1>
             <button id="privacyToggle" class="btn btn-secondary" onclick="togglePrivacy()">
                 <span id="privacyIcon">👁️</span>
                 <span id="privacyText">Ocultar datos</span>
@@ -148,22 +150,22 @@
         
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-title">Reservas Hoy</div>
+            <div class="stat-title" data-translate="analytics.total_bookings">Reservas Totales</div>
                 <div class="stat-value" id="todayBookings">8</div>
                 <div class="stat-change">+2 vs ayer</div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Ingresos Semana</div>
+            <div class="stat-title" data-translate="analytics.total_revenue">Ingresos Totales</div>
                 <div class="stat-value sensitive-data" id="weeklyRevenue">€1,245</div>
                 <div class="stat-change">+15% vs anterior</div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Clientes Nuevos</div>
+            <div class="stat-title" data-translate="analytics.unique_clients">Clientes Únicos</div>
                 <div class="stat-value sensitive-data" id="newClients">12</div>
                 <div class="stat-change">+3 esta semana</div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Ocupación</div>
+            <div class="stat-title">Ocupación</div>
                 <div class="stat-value">78%</div>
                 <div class="stat-change" style="color: #dc2626;">-5% vs anterior</div>
             </div>

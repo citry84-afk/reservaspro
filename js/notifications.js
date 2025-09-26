@@ -263,32 +263,15 @@ class NotificationManager {
         
         this.sendNotification(type, method, testAppointment);
     }
-}
 
-// CSS para animaciones
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-`;
-document.head.appendChild(style);
-
-// Inicializar automáticamente
-window.notificationManager = new NotificationManager();
     // Notificaciones Push gratuitas (PWA)
     sendPushNotification(message, appointment) {
         if ("Notification" in window && "serviceWorker" in navigator) {
             if (Notification.permission === "granted") {
                 new Notification(`ReservasPro - ${appointment.client}`, {
                     body: message,
-                    icon: "/assets/icons/icon-192x192.png",
-                    badge: "/assets/icons/icon-72x72.png",
+                    icon: "/icons/icon-192x192.png",
+                    badge: "/icons/icon-72x72.png",
                     tag: `appointment-${appointment.id}`,
                     requireInteraction: true
                 });
@@ -305,7 +288,6 @@ window.notificationManager = new NotificationManager();
 
     // Notificaciones in-app gratuitas
     sendInAppNotification(message, appointment) {
-        // Crear notificación en la interfaz
         const notification = document.createElement("div");
         notification.className = "in-app-notification";
         notification.style.cssText = `
@@ -339,7 +321,6 @@ window.notificationManager = new NotificationManager();
         
         document.body.appendChild(notification);
         
-        // Auto-remove después de 5 segundos
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.remove();
@@ -349,3 +330,20 @@ window.notificationManager = new NotificationManager();
         console.log("💬 In-app notification sent:", message);
     }
 }
+
+// CSS para animaciones
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
+// Inicializar automáticamente
+window.notificationManager = new NotificationManager();

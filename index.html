@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReservasPro - Sistema de Reservas Profesional</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/icon-192x192.png">
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4129506161314540" crossorigin="anonymous"></script>
@@ -138,7 +140,7 @@
 </head>
 <body>
     <div class="welcome-container">
-        <div class="logo">�� ReservasPro</div>
+        <div class="logo">📅 ReservasPro</div>
         <div class="subtitle">Sistema Profesional de Reservas</div>
         
         <div class="features">
@@ -183,6 +185,11 @@
     </div>
     
     <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
         // Analytics tracking
         gtag('event', 'welcome_page_view', {
             'page_title': 'ReservasPro Welcome',
@@ -199,5 +206,6 @@
             });
         });
     </script>
+    <script src="/js/multilanguage.js"></script>
 </body>
 </html>

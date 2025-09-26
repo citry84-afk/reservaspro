@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservar Cita - Peluquería María</title>
+    <link rel="stylesheet" href="/css/mobile-optimization.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui; background: #f8fafc; }
@@ -96,31 +97,31 @@
             </div>
             
             <div class="form-group">
-                <label for="clientName">Nombre completo *</label>
+                <label for="clientName" data-translate="form.client_name">Nombre del Cliente</label>
                 <input type="text" id="clientName" required placeholder="Ej: María García">
             </div>
             
             <div class="form-group">
-                <label for="clientPhone">Teléfono *</label>
+                <label for="clientPhone" data-translate="form.client_phone">Teléfono</label>
                 <input type="tel" id="clientPhone" required placeholder="Ej: 666 777 888">
             </div>
             
             <div class="form-group">
-                <label for="clientEmail">Email (opcional)</label>
+                <label for="clientEmail" data-translate="form.client_email">Email</label>
                 <input type="email" id="clientEmail" placeholder="Ej: maria@gmail.com">
             </div>
             
             <div class="form-group">
-                <label for="clientNotes">Comentarios (opcional)</label>
+                <label for="clientNotes" data-translate="form.notes">Notas</label>
                 <input type="text" id="clientNotes" placeholder="Alguna petición especial...">
             </div>
             
-            <button class="btn" onclick="confirmBooking()">
-                ✅ Confirmar Reserva
-            </button>
+            <button class="btn" onclick="confirmBooking()"><span>✅ </span><span data-translate="btn.confirm">Confirmar</span></button>
         </div>
     </div>
 
+    <script src="/js/notifications.js"></script>
+    <script src="/js/multilanguage.js"></script>
     <script>
         let selectedService = null;
         let selectedDate = null;
@@ -353,6 +354,9 @@
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             appointments.push(booking);
             localStorage.setItem('appointments', JSON.stringify(appointments));
+            if (window.notificationManager) {
+                window.notificationManager.sendBookingConfirmation(booking);
+            }
             
             debugLog('Reserva guardada: ' + booking.id);
             

@@ -193,7 +193,10 @@
             debugLog('Horarios cargados: ' + Object.keys(schedule).length + ' días');
             debugLog('Horarios: ' + JSON.stringify(schedule));
             
-            // Generar próximos 14 días
+            // Generar rango de días (por defecto 14)
+            const agendaSettings = JSON.parse(localStorage.getItem("agendaSettings") || "{}");
+            const monthsAhead = agendaSettings.months || 1; // backup: 1 mes
+            const daysAhead = agendaSettings.daysAhead || monthsAhead * 30; // fallback
             for (let i = 0; i < daysAhead; i++) {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);
